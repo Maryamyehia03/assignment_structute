@@ -45,15 +45,15 @@ public:
 
 };
 
-void quicksort_gpa(vector<student>a, int left, int right) {
+void quicksort_gpa(vector<student>&a, int left, int right) {
         int i = left, j = right;
         double pivot = a[(left + right) / 2].getgpa();
-        while (i < j) {cnt1++;
+        while (i <= j) {cnt1++;
             while (a[i].getgpa() < pivot)
                 cnt1++, i++;
             while (a[j].getgpa() > pivot)
                 cnt1++, j--;
-            if (i < j) {cnt1++;
+            if (i <= j) {cnt1++;
                 swap(a[i],a[j]);
                 i++;
                 j--;
@@ -62,25 +62,27 @@ void quicksort_gpa(vector<student>a, int left, int right) {
         if (left < j){cnt1++;
             quicksort_gpa(a, left, j);}
         if (i < right){cnt1++;
-            quicksort_gpa(a, i+1, right);}
+            quicksort_gpa(a, i, right);}
     }
 
-void quicksort_name(vector<student>a,int left,int right){
+void quicksort_name(vector<student>&a,int left,int right){
+
     string pivot=a[(right+left)/2].getname();
+    cout<<pivot<<"\n";
     int i=left,j=right;
-    while (i<j){count0++;
+    while (i<=j){count0++;
         while (a[i].getname()<pivot)i++,count0++;
         while (a[j].getname()>pivot)j--,count0++;
-        if (i<j){ count0++;
+        if (i<=j){ count0++;
             swap(a[i],a[j]);
             i++;j--;
         }
     }
-    if (i<right){count0++; quicksort_name(a,i+1,right);}
+    if (i<right){count0++; quicksort_name(a,i,right);}
     if(j>left){count0++; quicksort_name(a,left,j);}
 }
 
-vector<student>a;int sizee;string line;string k;int i=0,cnt=1;
+vector<student>datas;int sizee;string line;string k;int i=0,cnt=1;
 ifstream file("student.txt");
 ofstream file1("SortedByGPA.txt");
 ofstream file2("SortedByName.txt");
@@ -99,7 +101,7 @@ void readfile(){
                 continue;}
             else if (cnt==2){s.setid(line);cnt++;
                 continue;}
-            else if (cnt==3){s.setgpa(stod(line));cnt=1;a.push_back(s);i++;
+            else if (cnt==3){s.setgpa(stod(line));cnt=1;datas.push_back(s);i++;
                 continue;}
         }
     }
@@ -109,23 +111,25 @@ int main() {
 
     readfile();
     //quick sort name
-    quicksort_name(a,0,sizee-1);
+    quicksort_name(datas,0,sizee-1);
     file2<<"Algorithm: Quick Sort\n"<<"Running Time: seconds\n"<<"Number of comparisons: 8\n";
     for (int j = 0; j < sizee; ++j) {
-        file2<<a[j].getname()<<'\n'<<a[j].getid()<<"\n"<<a[j].getgpa()<<"\n";}
+        file2<<datas[j].getname()<<'\n'<<datas[j].getid()<<"\n"<<datas[j].getgpa()<<"\n";}
     file2.close();
 
     //quick sort gpa
-    quicksort_gpa(a,0,sizee-1);
+    quicksort_gpa(datas,0,sizee-1);
     file1<<"Algorithm: Quick Sort\n"<<"Running Time: nlog(n) \n"<<"Number of comparisons: 9\n";
     for (int j = 0; j < sizee; ++j) {
-        file1<<a[j].getname()<<'\n'<<a[j].getid()<<"\n"<<a[j].getgpa()<<"\n";}
+        file1<<datas[j].getname()<<'\n'<<datas[j].getid()<<"\n"<<datas[j].getgpa()<<"\n";}
 
-    
-    
-    
-    
-    
+
+    for (int j = 0; j < sizee; ++j) {
+        cout<<datas[j].getname()<<'\n'<<datas[j].getid()<<"\n"<<datas[j].getgpa()<<"\n";
+    }
+
+
+
     file1.close();
 file.close();
     return 0;
