@@ -4,8 +4,16 @@
 #include <cmath>
 #include <ostream>
 #include <algorithm>
+#include <cctype>
 using namespace std;
 long long count0=0,cnt1=0;
+string toLower(basic_string<char> s) {
+    for (basic_string<char>::iterator p = s.begin();
+         p != s.end(); ++p) {
+        *p = tolower(*p);
+    }
+    return s;
+}
 class student {
 private:
     string name;
@@ -21,7 +29,7 @@ public:
     }
 
     string getname() {
-        return name;
+        return toLower(name);
     }
 
     string getid() {
@@ -31,6 +39,11 @@ public:
     double getgpa() {
         return gpa;
     }
+
+    string getdata(){
+        return name+"\n"+id+"\n";
+    }
+
  void setname(string n) {
          name=n;
     }
@@ -41,6 +54,12 @@ public:
 
     void setgpa(double g) {
         gpa=g;
+    }
+
+    bool operator<(student s){
+
+        if (this->getname()<s.getname())return true;
+        else return false;
     }
 
 };
@@ -68,7 +87,6 @@ void quicksort_gpa(vector<student>&a, int left, int right) {
 void quicksort_name(vector<student>&a,int left,int right){
 
     string pivot=a[(right+left)/2].getname();
-    cout<<pivot<<"\n";
     int i=left,j=right;
     while (i<=j){count0++;
         while (a[i].getname()<pivot)i++,count0++;
@@ -112,24 +130,21 @@ int main() {
     readfile();
     //quick sort name
     quicksort_name(datas,0,sizee-1);
-    file2<<"Algorithm: Quick Sort\n"<<"Running Time: seconds\n"<<"Number of comparisons: 8\n";
+    file2<<"Algorithm: Quick Sort\n"<<"Running Time: seconds\n"<<"Number of comparisons: 11\n";
     for (int j = 0; j < sizee; ++j) {
-        file2<<datas[j].getname()<<'\n'<<datas[j].getid()<<"\n"<<datas[j].getgpa()<<"\n";}
+        file2<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
     file2.close();
 
     //quick sort gpa
     quicksort_gpa(datas,0,sizee-1);
     file1<<"Algorithm: Quick Sort\n"<<"Running Time: nlog(n) \n"<<"Number of comparisons: 9\n";
     for (int j = 0; j < sizee; ++j) {
-        file1<<datas[j].getname()<<'\n'<<datas[j].getid()<<"\n"<<datas[j].getgpa()<<"\n";}
-
-
-    for (int j = 0; j < sizee; ++j) {
-        cout<<datas[j].getname()<<'\n'<<datas[j].getid()<<"\n"<<datas[j].getgpa()<<"\n";
-    }
+        file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
 
 
 
+
+cout<<cnt1<<" "<<count0;
     file1.close();
 file.close();
     return 0;
