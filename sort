@@ -7,7 +7,7 @@
 #include <cctype>
 #include <chrono>
 using namespace std;
-
+//double max;
 long long count0=0,cnt1=0;
 string toLower(basic_string<char> s) {
     for (basic_string<char>::iterator p = s.begin();
@@ -16,6 +16,7 @@ string toLower(basic_string<char> s) {
     }
     return s;
 }
+
 class student {
 private:
     string name;
@@ -66,6 +67,32 @@ public:
 
 };
 
+void insertionSort_name(vector<student>& students) {
+    student tmp;
+    for (int i = 0; i < students.size(); ++i) {
+        tmp = students[i];
+        int j = i - 1;
+        while (j >= 0 && students[j].getname() > tmp.getname()) {
+            students[j + 1] = students[j];
+            j = j - 1;
+        }
+        students[j + 1] = tmp;
+    }
+}
+
+void insertionSort_gpa(vector<student>& students) {
+    student tmp;
+    for (int i = 0; i < students.size(); ++i) {
+        tmp = students[i];
+        int j = i - 1;
+        while (j >= 0 && students[j].getgpa()> tmp.getgpa()) {
+            students[j + 1] = students[j];
+            j = j - 1;
+        }
+        students[j + 1] = tmp;
+    }
+}
+
 void quicksort_gpa(vector<student>&a, int left, int right) {
         int i = left, j = right;
         double pivot = a[(left + right) / 2].getgpa();
@@ -102,6 +129,37 @@ void quicksort_name(vector<student>&a,int left,int right){
     if(j>left){count0++; quicksort_name(a,left,j);}
 }
 
+void countsort_gpa(vector<student>vec) {
+    if (vec.empty()) // Check if vector is empty
+        return;
+
+    student maxi = *max_element(vec.begin(), vec.end());
+    int max=maxi.getgpa();
+
+   // 'maxElement' now points to the object with the highest 'score'
+
+    // Allocate space for counters
+    vector<int> counts(max + 1);
+
+    // Count items
+    for (int i = 0; i < vec.size(); i++) {
+        counts[int (vec[i].getgpa())]+=1;
+    }
+
+    // Compute cumulative counts
+    for (int i = 1; i <= max; i++) {
+        counts[i] += counts[i - 1];
+    }
+
+    // Create a temporary vector to store the sorted elements
+    vector<student> temp(vec.size());
+
+    // Order elements
+    for (int i = vec.size() - 1; i >= 0; i--) {
+        temp[--counts[int (vec[i].getgpa())]] = vec[i];
+    }
+}
+
 vector<student>datas;int sizee;string line;string k;int i=0,cnt=1;
 ifstream file("student.txt");
 ofstream file1("SortedByGPA.txt");
@@ -129,20 +187,42 @@ void readfile(){
 
 int main() {
     readfile();
-    //quick sort name
-    quicksort_name(datas,0,sizee-1);
-    file2<<"Algorithm: Quick Sort\n"<<"Running Time:4 microseconds \n"<<"Number of comparisons: 11\n";
-    for (int j = 0; j < sizee; ++j) {
-        file2<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
-    file2.close();
 
     //quick sort gpa
     quicksort_gpa(datas,0,sizee-1);
     file1<<"Algorithm: Quick Sort\n"<<"Running Time: 2 microseconds \n"<<"Number of comparisons: 9\n";
     for (int j = 0; j < sizee; ++j) {
         file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
-    file1.close();
-    
+     file1<<"\n";
+
+    //quick sort name
+    quicksort_name(datas,0,sizee-1);
+    file2<<"Algorithm: Quick Sort\n"<<"Running Time:4 microseconds \n"<<"Number of comparisons: 11\n";
+    for (int j = 0; j < sizee; ++j) {
+        file2<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
+file2<<"\n";
+
+    //insertion sort gpa
+    insertionSort_gpa(datas);
+    file1<<"Algorithm: Insertion Sort\n"<<"Running Time:  microseconds \n"<<"Number of comparisons: \n";
+    for (int j = 0; j < sizee; ++j) {
+        file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
+    file1<<"\n";
+
+    //insertion sort name
+    insertionSort_name(datas);
+    file2<<"Algorithm: Insertion Sort\n"<<"Running Time:  microseconds \n"<<"Number of comparisons: \n";
+    for (int j = 0; j < sizee; ++j) {
+        file2<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
+    file2<<"\n";
+
+//    count sort gpa
+    countsort_gpa(datas);
+    file1<<"Algorithm: count sort\n"<<"Running Time:  microseconds \n"<<"Number of comparisons: \n";
+    for (int j = 0; j < sizee; ++j) {
+        file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
+    file1<<"\n";
+
 file.close();
     return 0;
 }
