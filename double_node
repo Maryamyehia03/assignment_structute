@@ -12,7 +12,6 @@ public:
     node * previous;
 };
 
-
 // TO MAKE OPERATION ON LINKED LIST
 template <class type>
 class double_linked_list {
@@ -20,6 +19,7 @@ private:
     int size=0;
     node<type>* head=NULL;
     node<type>* tail=NULL;
+
 public:
 
 // To check if list empty or not
@@ -43,7 +43,7 @@ public:
                 if (temp->data == element)return true;
                 temp=temp->next;
             }
-            cout << " SORRY BUT THE ELEMENT" << element << "DOESN'T EXIST " <<'\n';
+            cout << " SORRY BUT THE ELEMENT " << element << " DOESN'T EXIST " <<'\n';
             return false;
         }
     }
@@ -111,7 +111,7 @@ public:
                 return true;}
             temp = temp->next;
         }
-        cout << " SORRY BUT THE ELEMENT" << element << "DOESN'T EXIST IN INDEX "<< index <<'\n';
+        cout << " SORRY BUT THE ELEMENT " << element << " DOESN'T EXIST IN INDEX "<< index <<'\n';
         return false;
     }
 
@@ -154,7 +154,7 @@ public:
     }
 
 // To insert an element into the specific index
-    void insertAt (int index, type element)
+    void insertAt (type element, int index)
     {
         if (index<=size+1 && index>0) {
             node<type>*temp= new node <type>;
@@ -185,7 +185,7 @@ public:
             return;
         }
         else{
-            cout<<"SORRY BUT ENTER RIGHT INDEX \n";
+            cout<<"SORRY BUT YOU ENTER WRONG INDEX \n";
             return;
         }
     }
@@ -193,31 +193,94 @@ public:
 // To delete the first element
     void removeAtHead ()
     {
-        size--;
+        if(isEmpty()){
+            cout<<"SORRY BUT THE LIST IS EMPTY ):";
+            return;}
+        else if(head->next == NULL){
+            head = NULL;
+            tail=NULL;
+            size--;
+            return;
+        }
+        else{
+            node<type>* temp= new node <type>;
+            temp = head;
+            head = head->next;
+            temp->next = NULL;
+            head->previous = NULL;
+            delete temp;
+            size--;
+            return;
+        }
     }
-
 
 // To delete the last element
     void removeAtTail ()
     {
-       size--;
+        if(isEmpty()){
+            cout<<"SORRY BUT THE LIST IS EMPTY ):";
+            return;}
+        else if(tail == head){
+            head = NULL;
+            tail = NULL;
+            size--;
+            return;
+        }
+        else{
+            node<type>*temp= new node <type>;
+            temp = tail;
+            tail = tail->previous;
+            tail->next = NULL;
+            temp->previous = NULL;
+            delete temp;
+            size--;
+            return;
+        }
     }
-
 
 // To delete a specific element
     void removeAt (int index)
     {
-        size--;
+        if(index > linkedListSize() || index < 0){
+            cout<<"SORRY INDEX OUT OF RANGE ): \n";
+            return;}
+        else if (index==1){
+            removeAtHead();
+            return;
+        }
+        else if (index==size){
+            removeAtTail();
+            return;
+        }
+        else{
+            node<type>*temp = new node<type>;
+            temp = head;
+            for(int i = 1;i<index && temp!=NULL;i++){
+                temp = temp->next;
+            }
+            temp->previous->next = temp->next;
+            temp->next->previous = temp->previous;
+            delete temp;
+            size--;
+        }
     }
-
 
 // To replace an element with a new one
-    void replaceAt (int index, type Element )
+    void replaceAt ( type Element, int index )
     {
-      size++;
-
+        if(index > linkedListSize() || index < 0){
+            cout<<"SORRY INDEX OUT OF RANGE ):";
+            return;}
+        else{
+            node<type>*temp = new node<type>;
+            temp = head;
+            for(int i = 1; i < index ;i++){
+                temp = temp->next;
+            }
+            temp->data = Element;
+            return;
+        }
     }
-
 
 // To retrieve an element
     type retrieveAt (int index)
@@ -233,9 +296,9 @@ public:
         return -1 ;
     }
 
-//
+//swap between two node
     void swap_node (int firstItemIdx, int secondItemIdx)
-    {
+    { bool check1= true,check2= true;
         if (isExist(firstItemIdx)&& isExist(secondItemIdx)){
         node<type>* add1=new node<type>;           node<type>* add2=new node<type>;
         add1->data=firstItemIdx;                   add2->data=secondItemIdx;
@@ -249,24 +312,46 @@ public:
                                                     if (temp2->data==secondItemIdx)break;
                                                     temp2=temp2->next;
                                                     }
-            if (temp1==head){
+
+        if (temp1==head){ check1= false;
+            add2->previous=NULL;
             add2->next=temp1->next;
-            }
-            if (temp2==tail){
+            temp1->next->previous=add2;
+            head=add2;
+        }
+        else if (temp1==tail){check1= false;
+            add2->next=NULL;
+            add2->previous=temp1->previous;
+            temp1->previous->next=add2;
+            tail=add2;
+        }
+        else{
+            add2->previous=temp1->previous;
+            temp1->previous->next=add2;
+            add2->next=temp1->next;
+            temp1->next->previous=add2;
+        }
+        if (temp2==tail){check2= false;
+            add1->next=NULL;
+            add1->previous=temp2->previous;
+            temp2->previous->next=add1;
+            tail=add1;
+        }
+        else if (temp2==head){check2= false;
+            add1->previous=NULL;
+            add1->next=temp2->next;
+            temp2->next->previous=add1;
+            head=add1;
+        }
+        else{
+            add1->previous=temp2->previous;
+            temp2->previous->next=add1;
+            add1->next=temp2->next;
+            temp2->next->previous=add1;
+        }
 
-            }
-            if (temp2==head){
-
-            }
-            if (temp1==tail){
-
-            }
-            else{
-                add2->previous=temp1->previous;
-                temp1->previous->next=add2;
-                add2->next=temp1->next;
-                temp1->next->previous=add2;
-            }
+        delete temp1;                                                   delete temp2;
+            return;
         }
         else{
             cout<<"SORRY! Enter Right Element\n";
@@ -318,7 +403,7 @@ int main() {
                 myList.insertAtTail(element);
                 continue;
             case 3:
-                cout << "Please enter an index and element : " << '\n';
+                cout << "Please enter an element and index : " << '\n';
                 cin >> element >> index;
                 myList.insertAt(element , index);
                 continue;
@@ -333,12 +418,12 @@ int main() {
                 cin >> index;
                 myList.removeAt (index);
                 continue;
-                case 7:
-                    double e1,e2;
+            case 7:
+                double e1,e2;
                 cout<<"Enter element 1 and element 2 :\n";
                 cin>>e1>>e2;
-                    myList.swap_node(e1, e2);
-                    continue;
+                myList.swap_node(e1, e2);
+                continue;
             case 8:
                 cout << "Please enter an element : " << '\n';
                 cin >> element;
@@ -347,7 +432,7 @@ int main() {
                 continue;
             case 9:
                 if (myList.isEmpty ())cout <<"Empty \n";
-                else cout <<"NON Empty \n";
+                else cout <<"NOT Empty \n";
                 continue;
             case 10:
                 cout << myList.linkedListSize ()<<"\n";
@@ -366,12 +451,14 @@ int main() {
             case 14:
                 cout << "Please enter an index : " << '\n';
                 cin >> index;
-                cout << myList.retrieveAt (index)<<'\n';
+                if (myList.retrieveAt(index)==-1){cout<<"SORRY ENTER RIGHT INDEX \n ";
+                    continue;}
+                else cout << myList.retrieveAt (index)<<'\n';
                 continue;
             case 15:
                 cout << "Please enter an element and index : " << '\n';
                 cin >> element >> index;
-                cout << myList.isItemAtEqual (element , index)<<"\n";
+                myList.isItemAtEqual (element , index);
                 continue;
             case 0:
                 cout << "Exiting program..." << '\n';
