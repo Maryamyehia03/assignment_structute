@@ -136,8 +136,8 @@ void Merge_GPA(vector<student>&array,int left,int middle,int right)
 {
     int n1 = middle - left + 1;
     int n2 = right - middle;
-    vector<student>l;
-    vector<student>m;
+    vector<student>l(n1);
+    vector<student>m(n2);
     for(int i = 0;i<n1;i++)l[i] = array[i+left];
     for(int i = 0;i<n2;i++)m[i] = array[i+middle+1];
     int i = 0,j = 0,k = left;
@@ -180,8 +180,8 @@ void Merge_Name(vector<student>&array,int left,int middle,int right)
 {
     int n1 = middle - left + 1;
     int n2 = right - middle;
-    vector<student>l;
-    vector<student>m;
+    vector<student>l(n1);
+    vector<student>m(n2);
     for(int i = 0;i<n1;i++)l[i] = array[i+left];
     for(int i = 0;i<n2;i++)m[i] = array[i+middle+1];
     int i = 0,j = 0,k = left;
