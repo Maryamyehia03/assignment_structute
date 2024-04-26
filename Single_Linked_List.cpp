@@ -366,16 +366,70 @@ public:
         }
     }
 
-    //
-    void swap(int firstItemIdx, int secondItemIdx)
+    // To swap two nodes without data
+    void swap(int index1 , int index2)
     {
+        if(isEmpty())
+        {
+            cout << " SORRY BUT THE LIST IS EMPTY ): " << '\n';
+            return;
+        }
+        else
+        {
+            if(index1 > linkedListSize() || index1 <= 0 || index2 > linkedListSize() || index2 <= 0)
+            {
+                cout << " SORRY BUT IT'S INVALID INDEX ): " << '\n';
+                return;
+            }
+            else if(index1 == index2)
+            {
+                cout << " SAME NODES....NOTHING TO SWAP! " << '\n';
+                return;
+            }
+            else
+            {
+                node <type> *prev1 = NULL;
+                node <type> *curr1 = head;
+                node <type> *prev2 = NULL;
+                node <type> *curr2 = head;
+
+                for (int i = 1; i < index1 && curr1 != NULL; ++i)
+                {
+                    prev1 = curr1;
+                    curr1 = curr1->next;
+                }
+
+                for (int i = 1; i < index2 && curr2 != NULL; ++i)
+                {
+                    prev2 = curr2;
+                    curr2 = curr2->next;
+                }
+
+
+                if (prev1 != NULL)
+                    prev1->next = curr2;
+                else
+                    head = curr2;
+
+                if (prev2 != NULL)
+                    prev2->next = curr1;
+                else
+                    head = curr1;
+
+
+                node <type> *temp = curr2->next;
+                curr2->next = curr1->next;
+                curr1->next = temp;
+            }
+            return;
+        }
     }
 };
 
 int main()
 {
 
-    int x = 20, index = 0;
+    int x = 20, index = 0 , index2=0;
     int element;
 
     single_linked_list<int> myList;
@@ -430,8 +484,11 @@ int main()
                 cin >> index;
                 myList.removeAt(index);
                 continue;
-                //case 7:
-                //    break;
+                case 7:
+                    cout << "Please enter index1 and index2 : " << '\n';
+                    cin >> index >> index2 ;
+                    myList.swap(index , index2);
+                    continue;
             case 8:
                 cout << "Please enter an element : " << '\n';
                 cin >> element;
