@@ -1,0 +1,427 @@
+#include <iostream>
+#include <bits/stdc++.h>
+using namespace std;
+
+
+// TO CREATE NODES
+template <class type>
+class node {
+public:
+    type data;
+    node * next;
+    node * previous;
+};
+
+// TO MAKE OPERATION ON LINKED LIST
+template <class type>
+class circular_double_linked_list {
+private:
+    int size=0;
+    node<type>* head=NULL;
+    node<type>* tail=NULL;
+
+public:
+
+// To check if list empty or not
+    bool isEmpty ()
+    {
+        return head==NULL && tail==NULL;
+    }
+
+// To search for an element
+    bool isExist (type element)
+    {
+        if(isEmpty ())
+        {
+            cout << " SORRY BUT THE LIST IS EMPTY " << '\n';
+            return false;
+        }
+        else
+        {
+            node<type>* temp=head;
+            for(int i = 1;i<=size;i++){
+                if (temp->data == element)return true;
+                temp=temp->next;
+            }
+            cout << "SORRY BUT THE ELEMENT " << element << " DOESN'T EXIST " <<'\n';
+            return false;
+        }
+    }
+
+// To print the size of list
+    int linkedListSize ()
+    {
+        return size;
+    }
+
+// To print the list
+    void print ()
+    {
+        if(isEmpty ())
+        {
+            cout << " SORRY BUT THE LIST IS EMPTY ): " << '\n';
+            return;
+        }
+        else
+        {
+            node <type> * temp = head;
+            while (temp->next != head)
+            {
+                cout << temp -> data << " " ;
+                temp = temp -> next;
+            }
+            cout<<temp->data;
+            cout<<"\n";
+            return;
+        }
+    }
+
+// To delete list
+    void clear ()
+    {
+        size=0;
+        if (isEmpty())
+        {
+            cout << " SORRY BUT THE LIST IS EMPTY ): " << '\n';
+            return;
+        }
+        else
+        {
+            node <type> * temp1 ;
+            node <type> * temp2 = head;
+            while (temp2 != NULL )
+            {
+                temp1 = temp2;
+                temp2 = temp2 -> next;
+                delete temp1;
+            }
+            head=NULL;
+            tail=NULL;
+            return;
+        }
+
+    }
+
+// To check if an element in a specific index
+    bool isItemAtEqual ( type element,int index)
+    {
+        if(index == 1){
+            if(head->data == element){
+                cout << "THE ELEMENT " << element << " EXISTS AT INDEX "<< index <<'\n';
+                return true;
+            }
+            return false;
+        }
+        else if(index == size){
+            if(tail->data == element){
+                cout << "THE ELEMENT " << element << " EXISTS AT INDEX "<< index <<'\n';
+                return true;
+            }
+            return false;
+        }
+        else {
+            node<type> *temp = head;
+            for (int i = 1; i <= index; ++i) {
+                if (temp->data == element) {
+                    cout << "THE ELEMENT " << element << " EXISTS AT INDEX " << index << '\n';
+                    return true;
+                }
+                temp = temp->next;
+            }
+            cout << "SORRY BUT THE ELEMENT " << element << " DOESN'T EXIST AT INDEX " << index << '\n';
+            return false;
+        }
+    }
+
+// To insert an element into the head
+    void insertAtHead (type element)
+    {
+        size++;
+        node<type>*temp = new node <type>;
+        temp->data = element;
+        if(head == NULL){
+            head = temp;
+            tail = temp;
+        }
+        else{
+            temp->next = head;
+            head->previous = temp;
+            temp->previous = tail;
+            tail->next = temp;
+            head = temp;
+        }
+    }
+
+// To insert an element into the tail
+    void insertAtTail (type element)
+    {
+        size++;
+        node<type>*temp= new node <type>;
+        temp->data = element;
+        if (isEmpty()){
+            insertAtHead(element);
+            return;
+        }
+        else{
+            tail->next = temp;
+            temp->next = head;
+            temp->previous = tail;
+            tail->next = temp;
+            tail = temp;
+        }
+    }
+
+// To insert an element into the specific index
+    void insertAt (type element, int index)
+    {
+        if(index == 1)insertAtHead(element);
+        else if(index == size + 1)insertAtTail(element);
+        else if(index < 0 || index > size + 1)cout<<"SORRY OUT OF RANGE ):\n";
+        else{
+            node<type>* temp = new node<type>;
+            temp->data = element;
+            node<type>* ptr = head;
+            for(int i = 1;i<index-1;i++)
+                ptr = ptr->next;
+            temp->next = ptr->next;
+            ptr->next->previous = temp;
+            temp->previous = ptr;
+            ptr->next = temp;
+            size++;
+        }
+    }
+
+// To delete the first element
+    void removeAtHead ()
+    {
+        if(isEmpty()){
+            cout<<"SORRY BUT THE LIST IS EMPTY ):";
+            }
+        else if(head == tail){
+            head = NULL;
+            tail=NULL;
+            size--;
+        }
+        else{
+            node<type>* temp = head;
+            head = head->next;
+           tail->next = head;
+           head->previous = tail;
+           temp->next = NULL;
+           temp->previous = NULL;
+           delete temp;
+           size--;
+        }
+    }
+
+// To delete the last element
+    void removeAtTail ()
+    {
+        if(isEmpty()){
+            cout<<"SORRY BUT THE LIST IS EMPTY ):";
+        }
+        else if(tail == head){
+            head = NULL;
+            tail = NULL;
+            size--;
+        }
+        else{
+            node<type>*temp = tail;
+            tail = tail->previous;
+            tail->next = head;
+            head->previous = tail;
+            temp->next = NULL;
+            temp->previous = NULL;
+            delete temp;
+            size--;
+            return;
+        }
+    }
+
+// To delete a specific element
+    void removeAt (int index)
+    {
+        if(index > linkedListSize() || index < 0){
+            cout<<"SORRY INDEX OUT OF RANGE ): \n";
+        }
+        else if (index == 1){
+            removeAtHead();
+        }
+        else if (index == size){
+            removeAtTail();
+        }
+        else{
+            node<type>*temp = head;
+            node<type>*prev = new node<type>;
+            prev = NULL;
+            for(int i = 1;i<index && temp->next != head;i++){
+                prev = temp;
+                temp = temp->next;
+            }
+            prev->next = temp->next;
+            temp->next->previous = prev;
+            temp->previous = NULL;
+            temp->next = NULL;
+            delete temp;
+            size--;
+        }
+    }
+
+// To replace an element with a new one
+    void replaceAt ( type Element, int index )
+    {
+        if(index > linkedListSize() || index < 0){
+            cout<<"SORRY INDEX OUT OF RANGE ):";
+            return;}
+        else{
+            node<type>*temp = head;
+            for(int i = 1; i < index ;i++){
+                temp = temp->next;
+            }
+            temp->data = Element;
+        }
+    }
+
+// To retrieve an element
+    type retrieveAt (int index)
+    {
+        if(index < 0 || index > size)cout<<"SORRY INDEX OUT OF RANGE ):\n";
+        else {
+            node<type> *temp = head;
+            for (int i = 1; i < index && temp->next != head; ++i) {
+                temp = temp->next;
+            }
+            return temp->data;
+        }
+    }
+
+//swap between two node
+    void swap_node (int firstItemIdx, int secondItemIdx)
+    {
+        node<type>*temp1 = head;
+        node<type>*temp2 = head;
+        for(int i = 1;i<= firstItemIdx;i++)
+            temp1 = temp1->next;
+        for(int i = 1;i<= secondItemIdx;i++)
+            temp2 = temp2->next;
+        node<type>*tmp1 = temp1->next;
+        temp1->next = temp2->next;
+        temp2->next = tmp1;
+        temp2->next->previous = temp1;
+        temp2->next->previous = temp2;
+    }
+
+};
+
+
+int main() {
+
+    int x = 20 , index = 0;
+    int element;
+
+    circular_double_linked_list<double> myList;
+
+    while (x)
+    {
+        cout << "PLEASE Choose :" << '\n'
+             << "1 - Insert at head."                   << '\n'
+             << "2 - Insert at tail."                   << '\n'
+             << "3 - Insert at specific index."         << '\n'
+             << "4 - Remove from head."                 << '\n'
+             << "5 - Remove from tail."                 << '\n'
+             << "6 - Remove from specific index."       << '\n'
+             << "7 - Swap."                             << '\n'
+             << "8 - Is exist."                         << '\n'
+             << "9 - Is empty."                         << '\n'
+             << "10 - Get size."                        << '\n'
+             << "11 - Clear the list."                  << '\n'
+             << "12 - Display list."                    << '\n'
+             << "13 - Replace."                         << '\n'
+             << "14 - retrieve."                        << '\n'
+             << "15 - Is equal."                        << '\n'
+             << "0 - TO EXIT."                   << '\n';
+
+        cin >> x ;
+        switch (x)
+        {
+            case 1:
+                cout << "Please enter an element : " << '\n';
+                cin >> element;
+                myList.insertAtHead(element);
+                continue;
+            case 2:
+                cout << "Please enter an element : " << '\n';
+                cin >> element;
+                myList.insertAtTail(element);
+                continue;
+            case 3:
+                cout << "Please enter an element and index : " << '\n';
+                cin >> element >> index;
+                myList.insertAt(element , index);
+                continue;
+            case 4:
+                myList.removeAtHead ();
+                continue;
+            case 5:
+                myList.removeAtTail ();
+                continue;
+            case 6:
+                cout << "Please enter an index : " << '\n';
+                cin >> index;
+                myList.removeAt (index);
+                continue;
+            case 7:
+                double e1,e2;
+                cout<<"Enter element 1 and element 2 :\n";
+                cin>>e1>>e2;
+                myList.swap_node(e1, e2);
+                continue;
+            case 8:
+                cout << "Please enter an element : " << '\n';
+                cin >> element;
+                if ( myList.isExist (element) )cout << "Exist\n";
+                else cout<<"NOT Exist\n";
+                continue;
+            case 9:
+                if (myList.isEmpty ())cout <<"Empty \n";
+                else cout <<"NOT Empty \n";
+                continue;
+            case 10:
+                cout << myList.linkedListSize ()<<"\n";
+                continue;
+            case 11:
+                myList.clear ();
+                continue;
+            case 12:
+                myList.print ();
+                continue;
+            case 13:
+                cout << "Please enter an element and index : " << '\n';
+                cin >> element >> index;
+                myList.replaceAt (element , index);
+                continue;
+            case 14:
+                cout << "Please enter an index : " << '\n';
+                cin >> index;
+                if (myList.retrieveAt(index)==-1){cout<<"SORRY ENTER RIGHT INDEX \n ";
+                    continue;}
+                else cout << myList.retrieveAt (index)<<'\n';
+                continue;
+            case 15:
+                cout << "Please enter an element and index : " << '\n';
+                cin >> element >> index;
+                myList.isItemAtEqual (element , index);
+                continue;
+            case 0:
+                cout << "Exiting program..." << '\n';
+                break;
+            default:
+                cout<< " INVALID CHOICE ): " << '\n';
+                continue;
+
+        }
+
+    }
+
+    return 0;
+}
