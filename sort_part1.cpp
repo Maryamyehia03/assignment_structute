@@ -10,9 +10,10 @@ using namespace std;
 using namespace chrono;
 //double max;
 //long long count0=0,cnt1=0;
-string toLower(basic_string<char> s) {
-    for (basic_string<char>::iterator p = s.begin();
-         p != s.end(); ++p) {
+string toLower(basic_string<char> s)
+{
+    for (basic_string<char>::iterator p = s.begin();p != s.end();++p)
+    {
         *p = tolower(*p);
     }
     return s;
@@ -26,96 +27,124 @@ private:
 public:
     // Constructor
     student(){}
-    student(string name, string id, double gpa) {
+    student(string name, string id, double gpa)
+    {
         this->name = name;
         this->gpa = gpa;
         this->id = id;
     }
 
-    string getname() {
+    string getname()
+    {
         return toLower(name);
     }
 
-    string getid() {
+    string getid()
+    {
         return id;
     }
 
-    double getgpa() {
+    double getgpa()
+    {
         return gpa;
     }
 
-    string getdata(){
+    string getdata()
+    {
         return name+"\n"+id+"\n";
     }
 
- void setname(string n) {
+ void setname(string n)
+    {
          name=n;
     }
 
-    void setid(string i) {
+    void setid(string i)
+    {
         id=i;
     }
 
-    void setgpa(double g) {
+    void setgpa(double g)
+    {
         gpa=g;
     }
 
-    bool operator<(student s){
+    bool operator<(student s)
+    {
 
-        if (this->getname()<s.getname())return true;
-        else return false;
+        if (this->getname()<s.getname())
+            return true;
+        else
+            return false;
     }
 
 };
 
-bool sort_name(student& s1,student& s2){
+bool sort_name(student& s1,student& s2)
+{
     return s1.getname()<s2.getname();
 }
 
-bool sort_gpa(student& s1, student& s2){
-    return s1.getgpa()<s2.getgpa();
+bool sort_gpa(student& s1, student& s2)
+{
+    return s1.getgpa() < s2.getgpa();
 }
 
 template<class u>
-void insertionSort(vector<student>& students,u compare) {
+void insertionSort(vector<student>& students,u compare)
+{
     student tmp;
-    for (int i = 0; i < students.size(); ++i) {
+    int comparisons = 0;
+    for (int i = 0; i < students.size(); ++i)
+    {
         tmp = students[i];
         int j = i - 1;
-        while (j >= 0 && compare(tmp,students[j])) {
+        while (j >= 0 && compare(tmp,students[j]))
+        {
             students[j + 1] = students[j];
             j = j - 1;
         }
         students[j + 1] = tmp;
+        comparisons++;
     }
 }
 
 template<typename u>
-void quicksort(vector<student>& students, int left, int right ,u compare){
+void quicksort(vector<student>& students, int left, int right ,u compare)
+{
     int i = left, j = right;
     student pivot = students[(left + right) / 2];
-    while (i <= j) {
-        while (compare(students[i], pivot)) {
+    while (i <= j)
+    {
+        while (compare(students[i], pivot))
+        {
             i++;
         }
 
-        while (compare(pivot,students[j])) {
+        while (compare(pivot,students[j]))
+        {
             j--;
         }
 
-        if (i <= j) {
+        if (i <= j)
+        {
             swap(students[i],students[j]);
             i++;
             j--;
         }
     }
-    if (left < j){
-        quicksort(students, left, j ,compare);}
-    if (i < right){
-        quicksort(students, i, right ,compare);}
+    if (left < j)
+    {
+        quicksort(students, left, j ,compare);
+    }
+    if (i < right)
+    {
+        quicksort(students, i, right ,compare);
+    }
 }
 
-void countsort_gpa(vector<student>vec) {
+void countsort_gpa(vector<student>vec)
+{
     if (vec.empty()) // Check if vector is empty
         return;
 
@@ -127,12 +156,14 @@ void countsort_gpa(vector<student>vec) {
     vector<int> counts(max + 1);
 
     // Count items
-    for (int i = 0; i < vec.size(); i++) {
+    for (int i = 0; i < vec.size(); i++)
+    {
         counts[int (vec[i].getgpa())]+=1;
     }
 
     // Compute cumulative counts
-    for (int i = 1; i <= max; i++) {
+    for (int i = 1; i <= max; i++)
+    {
         counts[i] += counts[i - 1];
     }
 
@@ -140,7 +171,8 @@ void countsort_gpa(vector<student>vec) {
     vector<student> temp(vec.size());
 
     // Order elements
-    for (int i = vec.size() - 1; i >= 0; i--) {
+    for (int i = vec.size() - 1; i >= 0; i--)
+    {
         temp[--counts[int (vec[i].getgpa())]] = vec[i];
     }
 }
@@ -148,12 +180,14 @@ void countsort_gpa(vector<student>vec) {
 template<typename u>
 void BubbleSort(vector<student>&arr , int n ,u compare)
 {
+    int comparisons = 0;
     bool is_sorted = true; // if # of swaps in first iteration=0 so array is already sorted (Best case)
 
     for(int i = 0 ; i < n-1 ; ++i)
     {
         for(int j = n-1 ; j > 0 ; j--)
         {
+            comparisons ++;
             if (compare(arr[j],arr[j-1]))
             {
                 swap(arr[j] , arr[j-1]);
@@ -161,7 +195,9 @@ void BubbleSort(vector<student>&arr , int n ,u compare)
             }
         }
         if(is_sorted == true)
+        {
             break;
+        }
     }
 }
 
@@ -215,12 +251,14 @@ void MergeSort(vector<student>&array,int left,int right ,u compare)
 template<typename u>
 void SelectionSort (vector<student>&arr , int n, u compare)
 {
+    int comparisons = 0;
     int min; // index for min value
     for (int i = 0 ; i < n ; i++)
     {
         min = i;
         for (int j = i + 1; j < n; j++) // to find min number in every iteration
         {
+            comparisons ++;
             if(compare(arr[j],arr[min]))
                 min = j;
         }
@@ -230,12 +268,16 @@ void SelectionSort (vector<student>&arr , int n, u compare)
 }
 
 template <typename U>
-void shellSort(vector<student>& arr, int n, U compare) {
-    for (int gap = n / 2; gap > 0; gap /= 2) {
-        for (int i = gap; i < n; i++) {
+void shellSort(vector<student>& arr, int n, U compare)
+{
+    for (int gap = n / 2; gap > 0; gap /= 2)
+    {
+        for (int i = gap; i < n; i++)
+        {
             student temp = arr[i];
             int j;
-            for (j = i; j >= gap && compare(temp, arr[j - gap]); j -= gap) {
+            for (j = i; j >= gap && compare(temp, arr[j - gap]); j -= gap)
+            {
                 arr[j] = arr[j - gap];
             }
             arr[j] = temp;
@@ -247,23 +289,42 @@ vector<student>datas;int sizee;string line;string k;int i=0,cnt=1;
 ifstream file("student.txt");
 ofstream file1("SortedByGPA.txt");
 ofstream file2("SortedByName.txt");
-void readfile(){
+void readfile()
+{
 
-    if (!file.is_open()){cout<<"Sorry!";return ;}
-    while (file){
-        while (getline(file, line)){
+    if (!file.is_open())
+    {
+        cout<<"Sorry!";return ;
+    }
+    while (file)
+    {
+        while (getline(file, line))
+        {
             k=(line);
             break;
         }
         sizee= stoi(k);
         student s;
-        while (getline(file, line)) {
-            if (cnt==1){s.setname(line);cnt++;
-                continue;}
-            else if (cnt==2){s.setid(line);cnt++;
-                continue;}
-            else if (cnt==3){s.setgpa(stod(line));cnt=1;datas.push_back(s);i++;
-                continue;}
+        while (getline(file, line))
+        {
+            if (cnt==1)
+            {
+                s.setname(line);cnt++;
+                continue;
+            }
+            else if (cnt==2)
+            {
+                s.setid(line);cnt++;
+                continue;
+            }
+            else if (cnt==3)
+            {
+                s.setgpa(stod(line));
+                cnt=1;
+                datas.push_back(s);
+                i++;
+                continue;
+            }
         }
     }
 }
@@ -274,85 +335,109 @@ int main() {
     //quick sort gpa
     quicksort(datas,0,sizee-1, sort_gpa);
     file1<<"Algorithm: Quick Sort\n"<<"Running Time: 2 microseconds \n"<<"Number of comparisons: 9\n";
-    for (int j = 0; j < sizee; ++j) {
-        file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
+    for (int j = 0; j < sizee; ++j)
+    {
+        file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";
+    }
     file1<<"\n";
 
     //quick sort name
     quicksort(datas,0,sizee-1, sort_name);
     file2<<"Algorithm: Quick Sort\n"<<"Running Time: 4 microseconds \n"<<"Number of comparisons: 11\n";
-    for (int j = 0; j < sizee; ++j) {
-        file2<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
+    for (int j = 0; j < sizee; ++j)
+    {
+        file2<<datas[j].getdata()<<datas[j].getgpa()<<"\n";
+    }
     file2<<"\n";
 
     //insertion sort gpa
     insertionSort(datas, sort_gpa);
     file1<<"Algorithm: Insertion Sort\n"<<"Running Time: 2 microseconds \n"<<"Number of comparisons: \n";
-    for (int j = 0; j < sizee; ++j) {
-        file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
+    for (int j = 0; j < sizee; ++j)
+    {
+        file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";
+    }
     file1<<"\n";
 
     //insertion sort name
     insertionSort(datas, sort_name);
     file2<<"Algorithm: Insertion Sort\n"<<"Running Time: 8 microseconds \n"<<"Number of comparisons: \n";
-    for (int j = 0; j < sizee; ++j) {
-        file2<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
+    for (int j = 0; j < sizee; ++j)
+    {
+        file2<<datas[j].getdata()<<datas[j].getgpa()<<"\n";
+    }
     file2<<"\n";
 
       //Bubble sort gpa
     BubbleSort(datas, sizee, sort_gpa);
     file1<<"Algorithm: Bubble Sort\n"<<"Running Time: 2 microseconds \n"<<"Number of comparisons: \n";
-    for (int j = 0; j < sizee; ++j) {
-        file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
+    for (int j = 0; j < sizee; ++j)
+    {
+        file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";
+    }
     file1<<"\n";
 
     //Bubble sort name
     BubbleSort(datas,sizee, sort_name);
     file2<<"Algorithm: Bubble Sort\n"<<"Running Time: 2 microseconds \n"<<"Number of comparisons: \n";
-    for (int j = 0; j < sizee; ++j) {
-        file2<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
+    for (int j = 0; j < sizee; ++j)
+    {
+        file2<<datas[j].getdata()<<datas[j].getgpa()<<"\n";
+    }
     file2<<"\n";
 
     //Selection sort gpa
     SelectionSort(datas, sizee, sort_gpa);
     file1<<"Algorithm: Selection Sort\n"<<"Running Time: 1 microseconds \n"<<"Number of comparisons: \n";
-    for (int j = 0; j < sizee; ++j) {
-        file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
+    for (int j = 0; j < sizee; ++j)
+    {
+        file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";
+    }
     file1<<"\n";
 
     //Selection sort name
     SelectionSort(datas,sizee, sort_name);
     file2<<"Algorithm: Selection Sort\n"<<"Running Time: 5 microseconds \n"<<"Number of comparisons: \n";
-    for (int j = 0; j < sizee; ++j) {
-        file2<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
+    for (int j = 0; j < sizee; ++j)
+    {
+        file2<<datas[j].getdata()<<datas[j].getgpa()<<"\n";
+    }
     file2<<"\n";
 
     //Shell sort gpa
     shellSort(datas, sizee, sort_gpa);
     file1<<"Algorithm: Shell Sort\n"<<"Running Time: 1 microseconds \n"<<"Number of comparisons: \n";
-    for (int j = 0; j < sizee; ++j) {
-        file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
+    for (int j = 0; j < sizee; ++j)
+    {
+        file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";
+    }
     file1<<"\n";
 
     //Shell sort name
     shellSort(datas,sizee, sort_name);
     file2<<"Algorithm: Shell Sort\n"<<"Running Time: 4 microseconds \n"<<"Number of comparisons: \n";
-    for (int j = 0; j < sizee; ++j) {
-        file2<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
+    for (int j = 0; j < sizee; ++j)
+    {
+        file2<<datas[j].getdata()<<datas[j].getgpa()<<"\n";
+    }
     file2<<"\n";
 
      //merge sort gpa
     MergeSort(datas,0,sizee-1, sort_gpa);
     file1<<"Algorithm: Merge Sort\n"<<"Running Time: 3 microseconds \n"<<"Number of comparisons: \n";
-    for (int j = 0; j < sizee; ++j) {
-        file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
+    for (int j = 0; j < sizee; ++j)
+    {
+        file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";
+    }
     file1<<"\n";
 
     //merge sort name
     MergeSort(datas,0,sizee-1, sort_name);
     file2<<"Algorithm: Merge Sort\n"<<"Running Time: 8 microseconds \n"<<"Number of comparisons: \n";
-    for (int j = 0; j < sizee; ++j) {
-        file2<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
+    for (int j = 0; j < sizee; ++j)
+    {
+        file2<<datas[j].getdata()<<datas[j].getgpa()<<"\n";
+    }
     file2<<"\n";
 
 
@@ -360,8 +445,10 @@ int main() {
 //    count sort gpa
     countsort_gpa(datas);
     file1<<"Algorithm: count sort\n"<<"Running Time: 29 microseconds \n"<<"Number of comparisons: \n";
-    for (int j = 0; j < sizee; ++j) {
-        file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";}
+    for (int j = 0; j < sizee; ++j)
+    {
+        file1<<datas[j].getdata()<<datas[j].getgpa()<<"\n";
+    }
     file1<<"\n";
 
 //    auto start = high_resolution_clock::now();
