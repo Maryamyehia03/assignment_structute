@@ -110,55 +110,44 @@ public:
 template <class type>
 class Binary_Search_Tree {
 private:
-    node <type> * root;
+    node<type> *root;
+    int MAX_SIZE;
+    vector<string> nameVec;
+    vector<int> priceVec;
 public:
     // Default constructor
-    Binary_Search_Tree()
-    {
+    Binary_Search_Tree() {
         root = NULL;
+        MAX_SIZE = sizeCall();
+        nameVec.resize(MAX_SIZE);
+        priceVec.resize(MAX_SIZE);
     }
 
     // To check if the BST empty or not
-    bool isEmpty()
-    {
+    bool isEmpty() {
         return (root == NULL);
     }
 
-    // Helper function to perform selection sort
-    void selectionSort(node <type> *r)
+    // To update nameVec and priceVec vectors after inserting a new item
+    void updateVectors(type element)
     {
-        node <type> *ptr1;
-        node <type> *ptr2;
-        type temp;
-
-        // Check for empty tree
-        if (r == NULL)
-            return;
-
-        for (ptr1 = r; ptr1->right != NULL; ptr1 = ptr1->right) {
-            for (ptr2 = ptr1->right; ptr2 != NULL; ptr2 = ptr2->right) {
-                // Compare node data and swap if necessary
-                if (ptr1->data > ptr2->data) {
-                    temp = ptr1->data;
-                    ptr1->data = ptr2->data;
-                    ptr2->data = temp;
-                }
-            }
-        }
+        nameVec.push_back(element.getName());
+        priceVec.push_back(element.getPrice());
     }
 
     // To insert item data
-    void insert (type element)
+    void insert(type element)
     {
-        node <type> * r = root;
-        node <type> * prev = NULL;
-        node <type> * newnode = new node <type>;
+        node<type> *r = root;
+        node<type> *prev = NULL;
+        node<type> *newnode = new node<type>;
         newnode->data = element;
 
         if (isEmpty())
         {
             newnode->right = newnode->left = NULL;
             root = newnode;
+            updateVectors(element);
             return;
         }
         else
@@ -177,25 +166,20 @@ public:
             if (prev->data < element)
                 prev->right = newnode;
 
-            // Update r to point to the new node
-            //r = newnode;
-
+            updateVectors(element);
 
             return;
         }
     }
 
     // To display the tree in preorder ----> 1-root , 2-left , 3-right
-    void display(node <type> * r)
-    {
-        if (isEmpty())
-        {
+    void display(node<type> *r) {
+        if (isEmpty()) {
             cout << " SORRY BUT THE LIST IS EMPTY ): " << '\n';
             return;
-        }
-        else
-        {
-            cout << "name: " << r->data.getName() << ", Category: " << r->data.getCategory() << ", Price: " << r->data.getPrice() << endl;
+        } else {
+            cout << "name: " << r->data.getName() << ", Category: " << r->data.getCategory() << ", Price: "
+                 << r->data.getPrice() << endl;
             if (r->left != NULL)
                 display(r->left);
             if (r->right != NULL)
@@ -206,229 +190,430 @@ public:
     }
 
     // To call display function
-    void displayCall()
-    {
+    void displayCall() {
         display(root);
         return;
     }
 
-    // To display according to names ascending
-    void displayNameAscending(node <type> * r)
-    {
-        if (isEmpty())
-        {
-            cout << " SORRY BUT THE LIST IS EMPTY ): " << '\n';
-            return;
-        }
-        else
-        {
-            selectionSort(r);
-            cout << "name: " << r->data.getName() << ", Category: " << r->data.getCategory() << ", Price: " << r->data.getPrice() << endl;
-            if (r->left != NULL)
-                displayNameAscending(r->left);
-            if (r->right != NULL)
-                displayNameAscending(r->right);
-            return;
-        }
-        return;
+    // To return the size of tree
+    int size(node<type> *r) {
+        if (r == NULL) // Base case
+            return 0;
+
+        int counter = 1; // Start with 1 for the current node
+        counter += size(r->left);
+        counter += size(r->right);
+
+        return counter;
     }
 
-    // To call displayNameAscending function
-    void displayNameAscendingCall()
+    // To call size function
+    int sizeCall() {
+        int SIZE = size(root);
+        return SIZE;
+    }
+
+    // To search by item name and return node
+    node<type> *searchByName(const string &itemName, node<type> *current) {
+        if (current == NULL)
+        {
+            return NULL;
+        }
+
+        if (current->data.getName() == itemName)
+        {
+            return current;
+        }
+
+        node<type> *leftResult = searchByName(itemName, current->left);
+        if (leftResult != NULL)
+        {
+            return leftResult; // If found in the left subtree, return the result
+        }
+
+        node<type> *rightResult = searchByName(itemName, current->right);
+        if (rightResult != NULL)
+        {
+            return rightResult; // If found in the right subtree, return the result
+        }
+    }
+
+    // To call searchByName function
+    node<type> *searchByNameCall(const string &itemName)
     {
-        displayNameAscending(root);
+        return searchByName(itemName, root);
+    }
+
+    // To display items according to names ascending
+    void displayAscendingByName()
+    {
+        sort(nameVec.begin(), nameVec.end());
+
+
+        for (const string &name: nameVec)
+        {
+            node<type> *foundNode = searchByNameCall(name);
+            if (foundNode != NULL)
+            {
+                cout << "Name: " << foundNode->data.getName() << ", Category: " << foundNode->data.getCategory()
+                     << ", Price: " << foundNode->data.getPrice() << '\n';
+            }
+        }
+    }
+
+    // To display items according to names descending
+    void displayDescendingByName()
+    {
+        sort(nameVec.begin(), nameVec.end(), greater<string>());
+
+
+        for (const string &name: nameVec)
+        {
+            node<type> *foundNode = searchByNameCall(name);
+            if (foundNode != NULL)
+            {
+                cout << "Name: " << foundNode->data.getName() << ", Category: " << foundNode->data.getCategory()
+                     << ", Price: " << foundNode->data.getPrice() << '\n';
+            }
+        }
+    }
+
+    // To search by item price and return node
+    node<type> *searchByPrice(const int &itemPrice, node<type> *current)
+    {
+        if (current == NULL)
+        {
+            return NULL;
+        }
+
+        if (current->data.getPrice() == itemPrice)
+        {
+            return current;
+        }
+
+        node<type> *leftResult = searchByPrice(itemPrice, current->left);
+        if (leftResult != NULL)
+        {
+            return leftResult; // If found in the left subtree, return the result
+        }
+
+        node<type> *rightResult = searchByPrice(itemPrice, current->right);
+        if (rightResult != NULL)
+        {
+            return rightResult; // If found in the right subtree, return the result
+        }
+    }
+
+    // To call searchByPrice function
+    node<type> *searchByPriceCall(const int &itemPrice)
+    {
+        return searchByPrice(itemPrice, root);
+    }
+
+    // To display items according to prices ascending
+    void displayAscendingByPrice()
+    {
+        sort(priceVec.begin(), priceVec.end());
+
+
+        for (const int &price: priceVec)
+        {
+            node<type> *foundNode = searchByPriceCall(price);
+            if (foundNode != NULL)
+            {
+                cout << "Name: " << foundNode->data.getName() << ", Category: " << foundNode->data.getCategory()
+                     << ", Price: " << foundNode->data.getPrice() << '\n';
+            }
+        }
+    }
+
+    // To display items according to prices descending
+    void displayDescendingByPrice()
+    {
+
+        sort(priceVec.begin(), priceVec.end(), greater<int>());
+
+        for (const int &price: priceVec)
+        {
+            node<type> *foundNode = searchByPriceCall(price);
+            if (foundNode != NULL)
+            {
+                cout << "Name: " << foundNode->data.getName() << ", Category: " << foundNode->data.getCategory()
+                     << ", Price: " << foundNode->data.getPrice() << '\n';
+            }
+        }
+    }
+
+    // To delete item
+    void remove(node <type> * &r , type element)
+    {
+        if(r == NULL)
+        {
+            cout << "SORRY BUT THE LIST IS EMPTY ): " << '\n';
+            return;
+        }
+
+        // Search for the node to delete
+        if(element < r->data)
+        {
+            remove(r->left , element);
+        }
+        else if(element > r->data)
+        {
+            remove(r->right , element);
+        }
+        else // Found the node to delete
+        {
+            // Update nameVec and priceVec vectors before removing the node
+            auto nameIter = find(nameVec.begin(), nameVec.end(), element.getName());
+            auto priceIter = find(priceVec.begin(), priceVec.end(), element.getPrice());
+
+            if (nameIter != nameVec.end())
+            {
+                nameVec.erase(nameIter);
+            }
+            if (priceIter != priceVec.end())
+            {
+                priceVec.erase(priceIter);
+            }
+
+            // Case 1: Node is a leaf (no children)
+            if(r->left == NULL && r->right == NULL)
+            {
+                delete r;
+                r = NULL;
+            }
+                // Case 2: Node has only one child
+            else if(r->left == NULL)
+            {
+                node<type> *temp = r;
+                r = r->right;
+                delete temp;
+            }
+            else if(r->right == NULL)
+            {
+                node<type> *temp = r;
+                r = r->left;
+                delete temp;
+            }
+            else // Case 3: Node has two children
+            {
+
+                node<type> *successor = r->right;
+                while(successor->left != NULL)
+                {
+                    successor = successor->left;
+                }
+
+                r->data = successor->data;
+
+                // Recursively remove the successor node from the right subtree
+                remove(r->right, successor->data);
+            }
+        }
+    }
+
+
+    // To call remove function
+    void removeCall(type element)
+    {
+        remove(root , element);
     }
 };
 
-int main()
-{
-    int mainMenu = 5, miniMenu = 100, itemPrice = 0;
-    string itemName = "", itemCategory = "";
+    int main() {
+        int mainMenu = 5, miniMenu = 100, itemPrice = 0;
+        string itemName = "", itemCategory = "";
 
-    // An instance of Binary search tree
-    Binary_Search_Tree <item> BST;
+        // An instance of Binary search tree
+        Binary_Search_Tree<item> BST;
 
-    while (mainMenu != 0)
-    {
-        miniMenu = 100; // So I can enter the inner loop again
+        while (mainMenu != 0) {
+            miniMenu = 100; // So I can enter the inner loop again
 
-        cout << "PLEASE CHOOSE NON LINEAR STRUCTURE YOU WANT :"    <<'\n'
-             << "1- Binary Search Trees."                          <<'\n'
-             << "2- Heaps."                                        <<'\n'
-             << "3- AVL Trees."                                    <<'\n'
-             << "OR PRESS 0 TO END THE PROGRAM."                   <<'\n';
+            cout << "PLEASE CHOOSE NON LINEAR STRUCTURE YOU WANT :" << '\n'
+                 << "1- Binary Search Trees."                       << '\n'
+                 << "2- Heaps."                                     << '\n'
+                 << "3- AVL Trees."                                 << '\n'
+                 << "OR PRESS 0 TO END THE PROGRAM."                << '\n';
 
-        cin >> mainMenu;
+            cin >> mainMenu;
 
-        switch (mainMenu)
-        {
-            case 1:
-                while (miniMenu != 0 && miniMenu != 8)
-                {
-                    cout << "PLEASE ENTER # OF FUNCTION YOU WANT :"                          <<'\n'
-                         << "1- Add item."                                                   <<'\n'
-                         << "2- Remove item."                                                <<'\n'
-                         << "3- Display the item data normally."                             <<'\n'
-                         << "4- Display all the items sorted by their name ascending."       <<'\n'
-                         << "5- Display all the items sorted by their name descending."      <<'\n'
-                         << "6- Display all the items sorted by their prices ascending."     <<'\n'
-                         << "7-  Display all the items sorted by their prices descending."   <<'\n'
-                         << "8- To return to the main menu."                                 <<'\n'
-                         << "OR PRESS 0 TO END THE PROGRAM."                                 <<'\n';
-                    cin >> miniMenu;
+            switch (mainMenu) {
+                case 1:
+                    while (miniMenu != 0 && miniMenu != 8) {
+                        cout << "PLEASE ENTER # OF FUNCTION YOU WANT :"                         << '\n'
+                             << "1- Add item."                                                  << '\n'
+                             << "2- Remove item."                                               << '\n'
+                             << "3- Display the item data normally."                            << '\n'
+                             << "4- Display all the items sorted by their name ascending."      << '\n'
+                             << "5- Display all the items sorted by their name descending."     << '\n'
+                             << "6- Display all the items sorted by their prices ascending."    << '\n'
+                             << "7- Display all the items sorted by their prices descending."   << '\n'
+                             << "8- To return to the main menu."                                << '\n'
+                             << "OR PRESS 0 TO END THE PROGRAM."                                << '\n';
+                        cin >> miniMenu;
 
-                    switch (miniMenu)
-                    {
-                        case 1:
-                        {
-                            cout << "Enter the items manually." << '\n';
-                            int x = 1;
-                            while (x != 0)
-                            {
-                                cout << "Enter item name:     " <<'\n';
-                                cin >> itemName;
-                                cout << "Enter item category: " <<'\n';
-                                cin >> itemCategory;
-                                cout << "Enter item price: " <<'\n';
-                                cin >> itemPrice;
+                        switch (miniMenu) {
+                            case 1: {
+                                cout << "Enter the items manually." << '\n';
+                                int x = 1;
+                                while (x != 0) {
+                                    cout << "Enter item name:     " << '\n';
+                                    cin >> itemName;
+                                    cout << "Enter item category: " << '\n';
+                                    cin >> itemCategory;
+                                    cout << "Enter item price: " << '\n';
+                                    cin >> itemPrice;
 
-                                item newItem(itemName, itemCategory, itemPrice);
-                                BST.insert(newItem);
+                                    item newItem(itemName, itemCategory, itemPrice);
+                                    BST.insert(newItem);
 
-                                // Reset variables
-                                itemName = "";
-                                itemCategory = "";
-                                itemPrice = 0;
-
-                                cout << "IF YOU FINISH ENTER 0 ELSE ENTER 1." << '\n';
-                                cin >> x;
-                                if (x == 0)
-                                    break;
+                                    cout << "If you're done, enter 0 Enter anything else." << '\n';
+                                    cin >> x;
+                                    if (x == 0)
+                                        break;
+                                }
+                                continue;
                             }
-                            continue;
+                            case 2:
+                                cout << "Please enter item name :" << '\n';
+                                cin >> itemName;
+                                {
+                                    node<item>* foundNode = BST.searchByNameCall(itemName);
+                                    if (foundNode != nullptr)
+                                    {
+                                        BST.removeCall(foundNode->data);
+                                        cout << "Item successfully removed." << '\n';
+                                    }
+                                    else
+                                    {
+                                        cout << "Item not found in the tree." << '\n';
+                                    }
+                                }
+                                continue;
+                            case 3:
+                                BST.displayCall();
+                                cout << '\n';
+                                continue;
+                            case 4:
+                                BST.displayAscendingByName();
+                                cout << '\n';
+                                continue;
+                            case 5:
+                                BST.displayDescendingByName();
+                                cout << '\n';
+                                continue;
+                            case 6:
+                                BST.displayAscendingByPrice();
+                                cout << '\n';
+                                continue;
+                            case 7:
+                                BST.displayDescendingByPrice();
+                                cout << '\n';
+                                continue;
+                            case 8:
+                                cout << "Returning to main menu..." << '\n';
+                                break;
+                            case 0:
+                                cout << "Exiting program..." << '\n';
+                                return 0;
+                            default:
+                                cout << " INVALID CHOICE ): " << '\n';
+                                continue;
                         }
-                        case 2:
-                            continue;
-                        case 3:
-                            BST.displayCall();
-                            cout << '\n';
-                            continue;
-                        case 4:
-                            BST.displayNameAscendingCall();
-                            cout << '\n';
-                            continue;
-                        case 5:
-                            continue;
-                        case 6:
-                            continue;
-                        case 7:
-                            continue;
-                        case 8:
-                            cout << "Returning to main menu..." << '\n';
-                            break;
-                        case 0:
-                            cout << "Exiting program..." << '\n';
-                            return 0;
-                        default:
-                            cout << " INVALID CHOICE ): " << '\n';
-                            continue;
                     }
-                }
-                continue;
-            case 2:
-                while (miniMenu != 0 && miniMenu != 8)
-                {
-                    cout << "PLEASE ENTER # OF FUNCTION YOU WANT :"                          <<'\n'
-                         << "1- Add item."                                                   <<'\n'
-                         << "2- Remove item."                                                <<'\n'
-                         << "3- Display the item data normally."                             <<'\n'
-                         << "4- Display all the items sorted by their name ascending."       <<'\n'
-                         << "5- Display all the items sorted by their name descending."      <<'\n'
-                         << "6- Display all the items sorted by their prices ascending."     <<'\n'
-                         << "7-  Display all the items sorted by their prices descending."   <<'\n'
-                         << "8- To return to the main menu."                                 <<'\n'
-                         << "OR PRESS 0 TO END THE PROGRAM."                                 <<'\n';
-                    cin >> miniMenu;
+                    continue;
+                case 2:
+                    while (miniMenu != 0 && miniMenu != 8) {
+                        cout << "PLEASE ENTER # OF FUNCTION YOU WANT :" << '\n'
+                             << "1- Add item." << '\n'
+                             << "2- Remove item." << '\n'
+                             << "3- Display the item data normally." << '\n'
+                             << "4- Display all the items sorted by their name ascending." << '\n'
+                             << "5- Display all the items sorted by their name descending." << '\n'
+                             << "6- Display all the items sorted by their prices ascending." << '\n'
+                             << "7-  Display all the items sorted by their prices descending." << '\n'
+                             << "8- To return to the main menu." << '\n'
+                             << "OR PRESS 0 TO END THE PROGRAM." << '\n';
+                        cin >> miniMenu;
 
-                    switch (miniMenu)
-                    {
-                        case 1:
-                            continue;
-                        case 2:
-                            continue;
-                        case 3:
-                            continue;
-                        case 4:
-                            continue;
-                        case 5:
-                            continue;
-                        case 6:
-                            continue;
-                        case 7:
-                            continue;
-                        case 8:
-                            cout << "Returning to main menu..." << '\n';
-                            break;
-                        case 0:
-                            cout << "Exiting program..." << '\n';
-                            return 0;
-                        default:
-                            cout << " INVALID CHOICE ): " << '\n';
-                            continue;
+                        switch (miniMenu) {
+                            case 1:
+                                continue;
+                            case 2:
+                                continue;
+                            case 3:
+                                continue;
+                            case 4:
+                                continue;
+                            case 5:
+                                continue;
+                            case 6:
+                                continue;
+                            case 7:
+                                continue;
+                            case 8:
+                                cout << "Returning to main menu..." << '\n';
+                                break;
+                            case 0:
+                                cout << "Exiting program..." << '\n';
+                                return 0;
+                            default:
+                                cout << " INVALID CHOICE ): " << '\n';
+                                continue;
+                        }
                     }
-                }
-                continue;
-            case 3:
-                while (miniMenu != 0 && miniMenu != 8)
-                {
-                    cout << "PLEASE ENTER # OF FUNCTION YOU WANT :"                          <<'\n'
-                         << "1- Add item."                                                   <<'\n'
-                         << "2- Remove item."                                                <<'\n'
-                         << "3- Display the item data normally."                             <<'\n'
-                         << "4- Display all the items sorted by their name ascending."       <<'\n'
-                         << "5- Display all the items sorted by their name descending."      <<'\n'
-                         << "6- Display all the items sorted by their prices ascending."     <<'\n'
-                         << "7-  Display all the items sorted by their prices descending."   <<'\n'
-                         << "8- To return to the main menu."                                 <<'\n'
-                         << "OR PRESS 0 TO END THE PROGRAM."                                 <<'\n';
-                    cin >> miniMenu;
+                    continue;
+                case 3:
+                    while (miniMenu != 0 && miniMenu != 8) {
+                        cout << "PLEASE ENTER # OF FUNCTION YOU WANT :" << '\n'
+                             << "1- Add item." << '\n'
+                             << "2- Remove item." << '\n'
+                             << "3- Display the item data normally." << '\n'
+                             << "4- Display all the items sorted by their name ascending." << '\n'
+                             << "5- Display all the items sorted by their name descending." << '\n'
+                             << "6- Display all the items sorted by their prices ascending." << '\n'
+                             << "7-  Display all the items sorted by their prices descending." << '\n'
+                             << "8- To return to the main menu." << '\n'
+                             << "OR PRESS 0 TO END THE PROGRAM." << '\n';
+                        cin >> miniMenu;
 
-                    switch (miniMenu)
-                    {
-                        case 1:
-                            continue;
-                        case 2:
-                            continue;
-                        case 3:
-                            continue;
-                        case 4:
-                            continue;
-                        case 5:
-                            continue;
-                        case 6:
-                            continue;
-                        case 7:
-                            continue;
-                        case 8:
-                            cout << "Returning to main menu..." << '\n';
-                            break;
-                        case 0:
-                            cout << "Exiting program..." << '\n';
-                            return 0;
-                        default:
-                            cout << " INVALID CHOICE ): " << '\n';
-                            continue;
+                        switch (miniMenu) {
+                            case 1:
+                                continue;
+                            case 2:
+                                continue;
+                            case 3:
+                                continue;
+                            case 4:
+                                continue;
+                            case 5:
+                                continue;
+                            case 6:
+                                continue;
+                            case 7:
+                                continue;
+                            case 8:
+                                cout << "Returning to main menu..." << '\n';
+                                break;
+                            case 0:
+                                cout << "Exiting program..." << '\n';
+                                return 0;
+                            default:
+                                cout << " INVALID CHOICE ): " << '\n';
+                                continue;
+                        }
                     }
-                }
-                continue;
-            case 0:
-                cout << " Exiting program... " << '\n';
-                return 0;
-            default:
-                cout << " INVALID CHOICE ): " << '\n';
-                continue;
+                    continue;
+                case 0:
+                    cout << " Exiting program... " << '\n';
+                    return 0;
+                default:
+                    cout << " INVALID CHOICE ): " << '\n';
+                    continue;
+            }
         }
-    }
 
-    return 0;
-}
+        return 0;
+    }
