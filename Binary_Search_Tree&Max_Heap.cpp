@@ -85,6 +85,7 @@ public:
         }
         return false;
     }
+friend class AVLTree;
 };
 
 ComparisonType item::compareBy;
@@ -550,6 +551,231 @@ public:
         cout<<heapmax.size()<<"\n";
     }
 };
+class AVLNode {
+public:
+    item data;
+    AVLNode* left;
+    AVLNode* right;
+    int height;
+
+    AVLNode(item data) : data(data), left(nullptr), right(nullptr), height(1) {}
+};
+
+class AVLTree {
+private:
+    AVLNode* root;
+
+    int height(AVLNode* node) {
+        if (node == nullptr) return 0;
+        return node->height;
+    }
+
+    int balanceFactor(AVLNode* node) {
+        if (node == nullptr) return 0;
+        return height(node->left) - height(node->right);
+    }
+
+    AVLNode* rightRotate(AVLNode* y) {
+        AVLNode* x = y->left;
+        AVLNode* T2 = x->right;
+
+        x->right = y;
+        y->left = T2;
+
+        y->height = max(height(y->left), height(y->right)) + 1;
+        x->height = max(height(x->left), height(x->right)) + 1;
+
+        return x;
+    }
+
+    AVLNode* leftRotate(AVLNode* x) {
+        AVLNode* y = x->right;
+        AVLNode* T2 = y->left;
+
+        y->left = x;
+        x->right = T2;
+
+        x->height = max(height(x->left), height(x->right)) + 1;
+        y->height = max(height(y->left), height(y->right)) + 1;
+
+        return y;
+    }
+
+    AVLNode* insert(AVLNode* node, item data) {
+        if (node == nullptr) return new AVLNode(data);
+
+        if (data < node->data)
+            node->left = insert(node->left, data);
+        else
+            node->right = insert(node->right, data);
+
+        node->height = 1 + max(height(node->left), height(node->right));
+
+        int balance = balanceFactor(node);
+
+        if (balance > 1 && data < node->left->data)
+            return rightRotate(node);
+
+        if (balance < -1 && data > node->right->data)
+            return leftRotate(node);
+
+        if (balance > 1 && data > node->left->data) {
+            node->left = leftRotate(node->left);
+            return rightRotate(node);
+        }
+
+        if (balance < -1 && data < node->right->data) {
+            node->right = rightRotate(node->right);
+            return leftRotate(node);
+        }
+
+        return node;
+    }
+
+    void inorder(AVLNode* node) {
+        if (node != nullptr) {
+            inorder(node->left);
+            node->data.print();
+            inorder(node->right);
+        }
+    }
+
+    void reverseInorder(AVLNode* node) {
+        if (node != nullptr) {
+            reverseInorder(node->right);
+            node->data.print();
+            reverseInorder(node->left);
+        }
+    }
+
+    void inorderPrice(AVLNode* node) {
+        if (node != nullptr) {
+            inorderPrice(node->left);
+            node->data.print();
+            inorderPrice(node->right);
+        }
+    }
+
+    void reverseInorderPrice(AVLNode* node) {
+        if (node != nullptr) {
+            reverseInorderPrice(node->right);
+            node->data.print();
+            reverseInorderPrice(node->left);
+        }
+    }
+
+public:
+    AVLTree() : root(nullptr) {}
+
+    void insert(item data) {
+        root = insert(root, data);
+    }
+
+    void display() {
+        if (root == nullptr) {
+            cout << "Tree is empty!" << endl;
+            return;
+        }
+        cout << "Items in the supermarket:" << endl;
+        inorder(root);
+    }
+
+    void displayAscending() {
+        if (root == nullptr) {
+            cout << "Tree is empty!" << endl;
+            return;
+        }
+        cout << "Items in the supermarket (sorted by name, ascending):" << endl;
+        inorder(root);
+    }
+
+    void displayDescending() {
+        if (root == nullptr) {
+            cout << "Tree is empty!" << endl;
+            return;
+        }
+        cout << "Items in the supermarket (sorted by name, descending):" << endl;
+        reverseInorder(root);
+    }
+
+    void displayAscendingByPrice() {
+        if (root == nullptr) {
+            cout << "Tree is empty!" << endl;
+            return;
+        }
+        cout << "Items in the supermarket (sorted by price, ascending):" << endl;
+        inorderPrice(root);
+    }
+
+    void displayDescendingByPrice() {
+        if (root == nullptr) {
+            cout << "Tree is empty!" << endl;
+            return;
+        }
+        cout << "Items in the supermarket (sorted by price, descending):" << endl;
+        reverseInorderPrice(root);
+    }
+
+    void remove(item data) {
+        root = remove(root, data);
+    }
+
+    AVLNode* remove(AVLNode* node, item data) {
+        if (node == nullptr) return node;
+
+        if (data < node->data)
+            node->left = remove(node->left, data);
+        else if (data > node->data)
+            node->right = remove(node->right, data);
+        else {
+            if (node->left == nullptr || node->right == nullptr) {
+                AVLNode* temp = node->left ? node->left : node->right;
+                if (temp == nullptr) {
+                    temp = node;
+                    node = nullptr;
+                } else
+                    *node = *temp;
+                delete temp;
+            } else {
+                AVLNode* temp = minValueNode(node->right);
+                node->data = temp->data;
+                node->right = remove(node->right, temp->data);
+            }
+        }
+
+        if (node == nullptr) return node;
+
+        node->height = 1 + max(height(node->left), height(node->right));
+
+        int balance = balanceFactor(node);
+
+        if (balance > 1 && balanceFactor(node->left) >= 0)
+            return rightRotate(node);
+
+        if (balance > 1 && balanceFactor(node->left) < 0) {
+            node->left = leftRotate(node->left);
+            return rightRotate(node);
+        }
+
+        if (balance < -1 && balanceFactor(node->right) <= 0)
+            return leftRotate(node);
+
+        if (balance < -1 && balanceFactor(node->right) > 0) {
+            node->right = rightRotate(node->right);
+            return leftRotate(node);
+        }
+
+        return node;
+    }
+
+    AVLNode* minValueNode(AVLNode* node) {
+        AVLNode* current = node;
+        while (current->left != nullptr)
+            current = current->left;
+        return current;
+    }
+};
+
 
 int main() {
 
@@ -559,6 +785,7 @@ int main() {
     // An instance of Binary search tree
     Binary_Search_Tree<item> BST;
     heap_max<item>heap_max;
+    AVLTree supermarket;
 
     while (mainMenu != 0) {
         miniMenu = 100; // So I can enter the inner loop again
@@ -767,22 +994,54 @@ int main() {
                          << "8- To return to the main menu." << '\n'
                          << "OR PRESS 0 TO END THE PROGRAM." << '\n';
                     cin >> miniMenu;
+                    item newItem("", "", 0);
 
                     switch (miniMenu) {
                         case 1:
-                            continue;
+                            {
+                string name, category;
+                int price;
+                cout << "Enter item name: ";
+                cin >> name;
+                cout << "Enter item category: ";
+                cin >> category;
+                cout << "Enter item price: ";
+                cin >> price;
+                newItem = item(name, category, price);
+                supermarket.insert(newItem);
+                cout << "Item added successfully!" << endl;
+                break;
+            }
                         case 2:
-                            continue;
+                            {
+                string name, category;
+                int price;
+                cout << "Enter item name: ";
+                cin >> name;
+                cout << "Enter item category: ";
+                cin >> category;
+                cout << "Enter item price: ";
+                cin >> price;
+                newItem = item(name, category, price);
+                supermarket.remove(newItem);
+                cout << "Item removed successfully!" << endl;
+                break;
+            }
                         case 3:
-                            continue;
+                            supermarket.display();
+                            break;
                         case 4:
-                            continue;
+                            supermarket.displayAscending();
+                            break;
                         case 5:
-                            continue;
+                            supermarket.displayDescending();
+                            break;
                         case 6:
-                            continue;
+                            supermarket.displayAscendingByPrice();
+                            break;
                         case 7:
-                            continue;
+                            supermarket.displayDescendingByPrice();
+                            break;
                         case 8:
                             cout << "Returning to main menu..." << '\n';
                             break;
