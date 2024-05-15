@@ -830,7 +830,7 @@ int main() {
                                 item newItem(itemName, itemCategory, itemPrice);
                                 BST.insert(newItem);
 
-                                cout << "If you're done, Don't enter 0 Enter anything else." << '\n';
+                                cout << "If you are finished, enter 0, and if you are not finished, enter anything else." << '\n';
                                 cin >> x;
                                 if (x == 0)
                                     break;
