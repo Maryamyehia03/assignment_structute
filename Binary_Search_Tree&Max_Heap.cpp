@@ -437,43 +437,23 @@ public:
         }
     }
 
-    void MAX_HEAPIFY_name(){
+   void MAX_HEAPIFY_(ComparisonType T){
+        item::compareBy = T;
         for (int i = (heapmax.size()/2)-1; i >=0 ; i--) {
             if (((i*2)+2)<heapmax.size()){
-                if ((heapmax[(i*2)+1].getName()>heapmax[(i*2)+2].getName())){
-                    if ((heapmax[(i*2)+1].getName()>heapmax[i].getName()))
+                if ((heapmax[(i*2)+1]>heapmax[(i*2)+2])){
+                    if ((heapmax[(i*2)+1]>heapmax[i]))
                     {swap(heapmax[(i*2)+1],heapmax[i]); i=(heapmax.size()/2);}
                 }
                 else {
-                    if ((heapmax[(i*2)+2].getName()>heapmax[i].getName())){
+                    if ((heapmax[(i*2)+2]>heapmax[i])){
                         swap(heapmax[(i*2)+2],heapmax[i]); i=(heapmax.size()/2);
                     }
                 }
             }
             else if (((i*2)+1)<heapmax.size())
             {
-                if (heapmax[(i*2)+1].getName()>heapmax[i].getName())
-                {swap(heapmax[(i*2)+1],heapmax[i]);i=(heapmax.size()/2); }
-            }
-        }
-    }
-
-    void MAX_HEAPIFY_PRICE(){
-        for (int i = (heapmax.size()/2)-1; i >=0 ; i--) {
-            if (((i*2)+2)<heapmax.size()){
-                if ((heapmax[(i*2)+1].getPrice()>heapmax[(i*2)+2].getPrice())){
-                    if ((heapmax[(i*2)+1].getPrice()>heapmax[i].getPrice()))
-                    {swap(heapmax[(i*2)+1],heapmax[i]); i=(heapmax.size()/2);}
-                }
-                else {
-                    if ((heapmax[(i*2)+2].getPrice()>heapmax[i].getPrice())){
-                        swap(heapmax[(i*2)+2],heapmax[i]); i=(heapmax.size()/2);
-                    }
-                }
-            }
-            else if (((i*2)+1)<heapmax.size())
-            {
-                if (heapmax[(i*2)+1].getPrice()>heapmax[i].getPrice())
+                if (heapmax[(i*2)+1]>heapmax[i])
                 {swap(heapmax[(i*2)+1],heapmax[i]);i=(heapmax.size()/2); }
             }
         }
@@ -485,38 +465,11 @@ public:
         heapmax.pop_back();
     }
 
-    void sort_namemaxheap_acs(){
+    void sort_maxheap_acs(ComparisonType T){
+        item::compareBy=T;
         deque<item>sort_data;
         for (int i = 0; i < n; ++i) {
-            MAX_HEAPIFY_name();
-            sort_data.push_front(heapmax[0]);
-            extract();
-        }
-        for (int i = 0; i < sort_data.size(); ++i) {
-            heapmax.push_back(sort_data[i]);
-//            cout<<sort_data[i]<<" ";
-        }
-        print();
-    }
-
-    void sort_namemaxheap_decs(){
-        deque<item>sort_data;
-        for (int i = 0; i < n; ++i) {
-            MAX_HEAPIFY_name();
-            sort_data.push_back(heapmax[0]);
-            extract();
-        }
-        for (int i = 0; i < sort_data.size(); ++i) {
-            heapmax.push_back(sort_data[i]);
-//            cout<<sort_data[i]<<" ";
-        }
-        print();
-    }
-
-    void sort_pricemaxheap_acs(){
-        deque<item>sort_data;
-        for (int i = 0; i < n; ++i) {
-            MAX_HEAPIFY_PRICE();
+            MAX_HEAPIFY_(T);
             sort_data.push_front(heapmax[0]);
             extract();
         }
@@ -526,10 +479,11 @@ public:
         print();
     }
 
-    void sort_pricemaxheap_decs(){
+    void sort_maxheap_decs(ComparisonType T){
+        item::compareBy=T;
         deque<item>sort_data;
         for (int i = 0; i < n; ++i) {
-            MAX_HEAPIFY_PRICE();
+            MAX_HEAPIFY_(T);
             sort_data.push_back(heapmax[0]);
             extract();
         }
@@ -778,7 +732,8 @@ public:
 
 
 int main() {
-
+    ComparisonType Name=ComparisonType::NAME;
+    ComparisonType Price = ComparisonType::PRICE;
     int mainMenu = 5, miniMenu = 100, itemPrice = 0;
     string itemName = "", itemCategory = "";
 
@@ -917,16 +872,16 @@ int main() {
                             heap_max.print();
                             continue;
                         case 4:
-                            heap_max.sort_namemaxheap_acs();
+                            heap_max.sort_maxheap_acs(Name);
                             continue;
                         case 5:
-                            heap_max.sort_namemaxheap_decs();
+                            heap_max.sort_maxheap_decs(Name);
                             continue;
                         case 6:
-                            heap_max.sort_pricemaxheap_acs();
+                            heap_max.sort_maxheap_acs(Price);
                             continue;
                         case 7:
-                            heap_max.sort_pricemaxheap_decs();
+                            heap_max.sort_maxheap_decs(Price);
                             continue;
                         case 8:
                             cout << "Returning to main menu..." << '\n';
