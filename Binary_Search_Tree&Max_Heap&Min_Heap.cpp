@@ -512,8 +512,9 @@ public:
     }
 };
 
-//ola abdullah
+//Ola Abdullah
 ComparisonType item::compareBy;
+
 class Min_Heap : public item{
 private:
     vector<item>v;
@@ -549,23 +550,53 @@ public:
             }
         }
     }
-
+    void HeapifyUp(ComparisonType T){
+        compareBy = T;
+        int current = length - 1;
+        while(current > 0){
+            int parent = (current-1)/2;
+            if(v[current] < v[parent]){
+                swap(v[current],v[parent]);
+                current = parent;
+            }
+            else{
+                break;
+            }
+        }
+    }
     void DisplayItems(){
         for(int i = 0;i<length;i++){
             v[i].print();
+            cout<<"\n";
         }
-    }
-    void DisplayASC(ComparisonType T){
-        HeapifyDown(T);
-        DisplayItems();
     }
     void DisplayDESC(ComparisonType T){
         HeapifyDown(T);
+        int n = length;
+        for(int i = n-1;i >= 0;i--){
+            swap(v[0],v[i]);
+            length--;
+            HeapifyDown(T);
+        }
+        length = n;
+        DisplayItems();
+    }
+    void DisplayASC(ComparisonType T){
+        HeapifyDown(T);
+        int n = length;
+        for(int i = n-1;i >= 0;i--){
+            swap(v[0],v[i]);
+            length--;
+            HeapifyDown(T);
+        }
+        length = n;
         for(int i = length-1;i>=0;i--){
             v[i].print();
+            cout<<"\n";
         }
     }
 };
+
 
 //shahd samir
 class AVLNode {
@@ -814,18 +845,7 @@ int main() {
     Min_Heap minHeap;
     AVLTree supermarket;
 
-    BST.insert(item("z","z",10));BST.insert(item("x","z",20));BST.insert(item("w","z",30));
-    BST.insert(item("m","z",40));BST.insert(item("c","z",50));BST.insert(item("a","z",60));
-
-    heap_max.add(item("z","z",10));heap_max.add(item("x","z",20));heap_max.add(item("w","z",30));
-    heap_max.add(item("m","z",40));heap_max.add(item("c","z",50));heap_max.add(item("a","z",60));
-
-    minHeap.AddItem(item("z","z",10));minHeap.AddItem(item("x","z",20));minHeap.AddItem(item("w","z",30));
-    minHeap.AddItem(item("m","z",40));minHeap.AddItem(item("c","z",50));minHeap.AddItem(item("a","z",60));
-
-    supermarket.insert(item("z","z",10));supermarket.insert(item("x","z",20));supermarket.insert(item("w","z",30));
-    supermarket.insert(item("m","z",40));supermarket.insert(item("c","z",50));supermarket.insert(item("a","z",60));
-
+   
 
     while (mainMenu != 0) {
         miniMenu = 100; // So I can enter the inner loop again
