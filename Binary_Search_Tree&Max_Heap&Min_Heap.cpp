@@ -512,9 +512,8 @@ public:
     }
 };
 
-//Ola Abdullah
+//ola abdullah
 ComparisonType item::compareBy;
-
 class Min_Heap : public item{
 private:
     vector<item>v;
@@ -567,7 +566,6 @@ public:
     void DisplayItems(){
         for(int i = 0;i<length;i++){
             v[i].print();
-            cout<<"\n";
         }
     }
     void DisplayDESC(ComparisonType T){
@@ -592,11 +590,9 @@ public:
         length = n;
         for(int i = length-1;i>=0;i--){
             v[i].print();
-            cout<<"\n";
         }
     }
 };
-
 
 //shahd samir
 class AVLNode {
@@ -844,8 +840,6 @@ int main() {
     heap_max<item>heap_max;
     Min_Heap minHeap;
     AVLTree supermarket;
-
-   
 
     while (mainMenu != 0) {
         miniMenu = 100; // So I can enter the inner loop again
