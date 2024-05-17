@@ -86,6 +86,8 @@ public:
         return false;
     }
     friend class AVLTree;
+    friend class AVLTreePrice;
+
 };
 
 // TO CREATE NODES
@@ -828,6 +830,239 @@ public:
     }
 };
 
+class AVLTreePrice {
+private:
+    AVLNode* root;
+
+    // Helper function to get height of the tree
+    int height(AVLNode* node)
+    {
+        if (node == nullptr)
+            return 0;
+        return node->height;
+    }
+
+    // Helper function to get balance factor of the tree
+    int getBalance(AVLNode* node)
+    {
+        if (node == nullptr)
+            return 0;
+        return height(node->left) - height(node->right);
+    }
+
+    // Helper function to right rotate subtree rooted with y
+    AVLNode* rightRotate(AVLNode* y)
+    {
+        AVLNode* x = y->left;
+        AVLNode* T2 = x->right;
+
+        // Perform rotation
+        x->right = y;
+        y->left = T2;
+
+        // Update heights
+        y->height = max(height(y->left), height(y->right)) + 1;
+        x->height = max(height(x->left), height(x->right)) + 1;
+
+        // Return new root
+        return x;
+    }
+
+    // Helper function to left rotate subtree rooted with x
+    AVLNode* leftRotate(AVLNode* x)
+    {
+        AVLNode* y = x->right;
+        AVLNode* T2 = y->left;
+
+        // Perform rotation
+        y->left = x;
+        x->right = T2;
+
+        // Update heights
+        x->height = max(height(x->left), height(x->right)) + 1;
+        y->height = max(height(y->left), height(y->right)) + 1;
+
+        // Return new root
+        return y;
+    }
+
+    // Helper function to insert a data recursively in the subtree rooted with node
+    AVLNode* insertHelper(AVLNode* node, item data)
+    {
+
+        // Perform normal BST insertion
+        if (node == nullptr)
+            return new AVLNode(data);
+
+        if (data.price < node->data.price)
+            node->left = insertHelper(node->left, data);
+        else if (data.price > node->data.price)
+            node->right = insertHelper(node->right, data);
+        else // Equal data are not allowed in AVL
+            return node;
+
+        // Update height of this ancestor node
+        node->height = 1 + max(height(node->left), height(node->right));
+
+        // Get the balance factor of this ancestor node to check whether this node became unbalanced
+        int balance = getBalance(node);
+
+        // If this node becomes unbalanced, then there are four cases
+
+        // Left Left Case
+        if (balance > 1 && data.price < node->left->data.price)
+            return rightRotate(node);
+
+        // Right Right Case
+        if (balance < -1 && data.price > node->right->data.price)
+            return leftRotate(node);
+
+        // Left Right Case
+        if (balance > 1 && data.price > node->left->data.price) {
+            node->left = leftRotate(node->left);
+            return rightRotate(node);
+        }
+
+        // Right Left Case
+        if (balance < -1 && data.price < node->right->data.price) {
+            node->right = rightRotate(node->right);
+            return leftRotate(node);
+        }
+
+        // Return the (unchanged) node pointer
+        return node;
+    }
+
+    // Helper function to print items in ascending order of prices
+    void printAscendingHelper(AVLNode* node)
+    {
+        if (node == nullptr)
+            return;
+        printAscendingHelper(node->left);
+        node->data.print();
+        printAscendingHelper(node->right);
+    }
+
+    // Helper function to print items in descending order of prices
+    void printDescendingHelper(AVLNode* node)
+    {
+        if (node == nullptr)
+            return;
+        printDescendingHelper(node->right);
+        node->data.print();
+        printDescendingHelper(node->left);
+    }
+    AVLNode* findMinNode(AVLNode* node)
+    {
+        AVLNode* current = node;
+        while (current->left != nullptr)
+            current = current->left;
+        return current;
+    }
+
+    // Helper function to remove a data recursively in the subtree rooted with node
+    AVLNode* removeHelper(AVLNode* node, item data)
+    {
+        // Perform standard BST delete
+        if (node == nullptr)
+            return node;
+
+        // If the data to be deleted is smaller than the root's data, then it lies in the left subtree
+        if (data.price < node->data.price)
+            node->left = removeHelper(node->left, data);
+
+            // If the data to be deleted is greater than the root's data, then it lies in the right subtree
+        else if (data.price > node->data.price)
+            node->right = removeHelper(node->right, data);
+
+            // If the data is same as root's data, then this is the node to be deleted
+        else {
+            // Node with only one child or no child
+            if (node->left == nullptr || node->right == nullptr) {
+                AVLNode* temp = node->left ? node->left : node->right;
+
+                // No child case
+                if (temp == nullptr) {
+                    temp = node;
+                    node = nullptr;
+                } else // One child case
+                    *node = *temp; // Copy the contents of the non-empty child
+
+                delete temp;
+            } else {
+                // Node with two children: Get the inorder successor (smallest in the right subtree)
+                AVLNode* temp = findMinNode(node->right);
+
+                // Copy the inorder successor's data to this node
+                node->data.price = temp->data.price;
+
+                // Delete the inorder successor
+                node->right = removeHelper(node->right, temp->data);
+            }
+        }
+
+        // If the tree had only one node, then return
+        if (node == nullptr)
+            return node;
+
+        // Update height of the current node
+        node->height = 1 + max(height(node->left), height(node->right));
+
+        // Get the balance factor of this node to check whether this node became unbalanced
+        int balance = getBalance(node);
+
+        // If this node becomes unbalanced, then there are four cases
+
+        // Left Left Case
+        if (balance > 1 && getBalance(node->left) >= 0)
+            return rightRotate(node);
+
+        // Left Right Case
+        if (balance > 1 && getBalance(node->left) < 0) {
+            node->left = leftRotate(node->left);
+            return rightRotate(node);
+        }
+
+        // Right Right Case
+        if (balance < -1 && getBalance(node->right) <= 0)
+            return leftRotate(node);
+
+        // Right Left Case
+        if (balance < -1 && getBalance(node->right) > 0) {
+            node->right = rightRotate(node->right);
+            return leftRotate(node);
+        }
+
+        return node;
+    }
+public:
+    AVLTreePrice() : root(nullptr) {}
+
+    void remove(item key)
+    {
+        root = removeHelper(root, key);
+    }
+    // Function to insert a key in the tree
+    void insert(item key)
+    {
+        root = insertHelper(root, key);
+    }
+
+    // Function to print items sorted by their prices in ascending order
+    void printAscending()
+    {
+        cout << "Items sorted by prices in ascending order:" << endl;
+        printAscendingHelper(root);
+    }
+
+    // Function to print items sorted by their prices in descending order
+    void printDescending()
+    {
+        cout << "Items sorted by prices in descending order:" << endl;
+        printDescendingHelper(root);
+    }
+
+};
 
 int main() {
     ComparisonType Name=ComparisonType::NAME;
@@ -840,6 +1075,8 @@ int main() {
     heap_max<item>heap_max;
     Min_Heap minHeap;
     AVLTree supermarket;
+    AVLTreePrice supermarket2;
+
 
     while (mainMenu != 0) {
         miniMenu = 100; // So I can enter the inner loop again
@@ -1067,6 +1304,8 @@ int main() {
                             cin >> price;
                             newItem = item(name, category, price);
                             supermarket.insert(newItem);
+                            supermarket2.insert(newItem);
+
                             cout << "Item added successfully!" << endl;
                             break;
                         }
@@ -1082,6 +1321,8 @@ int main() {
                             cin >> price;
                             newItem = item(name, category, price);
                             supermarket.remove(newItem);
+                            supermarket2.remove(newItem);
+
                             cout << "Item removed successfully!" << endl;
                             break;
                         }
@@ -1095,10 +1336,10 @@ int main() {
                             supermarket.displayDescending();
                             break;
                         case 6:
-                            supermarket.displayAscendingByPrice();
+                            supermarket2.printAscending();
                             break;
                         case 7:
-                            supermarket.displayDescendingByPrice();
+                            supermarket2.printDescending();
                             break;
                         case 8:
                             cout << "Returning to main menu..." << '\n';
