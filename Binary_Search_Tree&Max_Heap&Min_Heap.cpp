@@ -85,10 +85,8 @@ public:
         }
         return false;
     }
-friend class AVLTree;
+    friend class AVLTree;
 };
-
-ComparisonType item::compareBy;
 
 // TO CREATE NODES
 template <class type>
@@ -106,6 +104,7 @@ public:
 };
 
 // TO MAKE OPERATION ON BINARY SEARCH TREE
+//rawan ahmed & hager hassan
 template <class type>
 class Binary_Search_Tree {
 private:
@@ -213,7 +212,8 @@ public:
     }
 
     // To search by item name and return node
-    node<type> *searchByName(const string &itemName, node<type> *current) {
+    node<type> *searchByName(const string &itemName, node<type> *current)
+    {
         if (current == NULL)
         {
             return NULL;
@@ -419,6 +419,7 @@ public:
     }
 };
 
+//maryam mostafa
 template<typename t>
 class heap_max{
     vector<item>heapmax;
@@ -432,12 +433,14 @@ public:
     }
 
     void print(){
+        if (heapmax.empty()){cout<<"Soory! The List is Empty.\n";return;}
         for (int i = 0; i < heapmax.size(); ++i) {
-            cout<<heapmax[i].getName()<<" "<<heapmax[i].getCategory()<<" "<<heapmax[i].getPrice()<<"\n";
+            heapmax[i].print();
+            cout<<"\n";
         }
     }
 
-   void MAX_HEAPIFY_(ComparisonType T){
+    void MAX_HEAPIFY_(ComparisonType T){
         item::compareBy = T;
         for (int i = (heapmax.size()/2)-1; i >=0 ; i--) {
             if (((i*2)+2)<heapmax.size()){
@@ -466,6 +469,7 @@ public:
     }
 
     void sort_maxheap_acs(ComparisonType T){
+        if (heapmax.empty()){cout<<"Soory! The List is Empty.\n";return;}
         item::compareBy=T;
         deque<item>sort_data;
         for (int i = 0; i < n; ++i) {
@@ -480,6 +484,7 @@ public:
     }
 
     void sort_maxheap_decs(ComparisonType T){
+        if (heapmax.empty()){cout<<"Soory! The List is Empty.\n";return;}
         item::compareBy=T;
         deque<item>sort_data;
         for (int i = 0; i < n; ++i) {
@@ -499,12 +504,70 @@ public:
             return;}
         n--;
         heapmax.pop_back();
+        cout<<"Delete Successfully\n";
     }
 
     void size(){
         cout<<heapmax.size()<<"\n";
     }
 };
+
+//ola abdullah
+ComparisonType item::compareBy;
+class Min_Heap : public item{
+private:
+    vector<item>v;
+    int length = 0;
+public:
+    void AddItem(const item& other){
+        v.push_back(other);
+        length++;
+    }
+
+    void DeleteMin(){
+        if(v.empty())cout<<"SORRY THERE ARE NO ITEMS !!!\n";
+        else{
+            swap(v[0],v[length-1]);
+            v.pop_back();
+            length--;
+        }
+    }
+
+    void HeapifyDown(ComparisonType T){
+        compareBy = T;
+        for(int i = length/2 -1;i>=0;i--){
+            int left = 2*i + 1;
+            int right = 2*i + 2;
+            int smallest = i;
+            if(left<length && v[smallest] > v[left])
+                smallest = left;
+            if(right<length && v[smallest] > v[right])
+                smallest = right;
+            if(smallest != i){
+                swap(v[smallest],v[i]);
+                HeapifyDown(T);
+            }
+        }
+    }
+
+    void DisplayItems(){
+        for(int i = 0;i<length;i++){
+            v[i].print();
+        }
+    }
+    void DisplayASC(ComparisonType T){
+        HeapifyDown(T);
+        DisplayItems();
+    }
+    void DisplayDESC(ComparisonType T){
+        HeapifyDown(T);
+        for(int i = length-1;i>=0;i--){
+            v[i].print();
+        }
+    }
+};
+
+//shahd samir
 class AVLNode {
 public:
     item data;
@@ -514,7 +577,6 @@ public:
 
     AVLNode(item data) : data(data), left(nullptr), right(nullptr), height(1) {}
 };
-
 class AVLTree {
 private:
     AVLNode* root;
@@ -632,6 +694,8 @@ public:
         }
         cout << "Items in the supermarket:" << endl;
         inorder(root);
+        cout<<"\n";
+
     }
 
     void displayAscending() {
@@ -641,6 +705,7 @@ public:
         }
         cout << "Items in the supermarket (sorted by name, ascending):" << endl;
         inorder(root);
+        cout<<"\n";
     }
 
     void displayDescending() {
@@ -650,6 +715,8 @@ public:
         }
         cout << "Items in the supermarket (sorted by name, descending):" << endl;
         reverseInorder(root);
+        cout<<"\n";
+
     }
 
     void displayAscendingByPrice() {
@@ -659,6 +726,8 @@ public:
         }
         cout << "Items in the supermarket (sorted by price, ascending):" << endl;
         inorderPrice(root);
+        cout<<"\n";
+
     }
 
     void displayDescendingByPrice() {
@@ -668,6 +737,8 @@ public:
         }
         cout << "Items in the supermarket (sorted by price, descending):" << endl;
         reverseInorderPrice(root);
+        cout<<"\n";
+
     }
 
     void remove(item data) {
@@ -740,7 +811,21 @@ int main() {
     // An instance of Binary search tree
     Binary_Search_Tree<item> BST;
     heap_max<item>heap_max;
+    Min_Heap minHeap;
     AVLTree supermarket;
+
+    BST.insert(item("z","z",10));BST.insert(item("x","z",20));BST.insert(item("w","z",30));
+    BST.insert(item("m","z",40));BST.insert(item("c","z",50));BST.insert(item("a","z",60));
+
+    heap_max.add(item("z","z",10));heap_max.add(item("x","z",20));heap_max.add(item("w","z",30));
+    heap_max.add(item("m","z",40));heap_max.add(item("c","z",50));heap_max.add(item("a","z",60));
+
+    minHeap.AddItem(item("z","z",10));minHeap.AddItem(item("x","z",20));minHeap.AddItem(item("w","z",30));
+    minHeap.AddItem(item("m","z",40));minHeap.AddItem(item("c","z",50));minHeap.AddItem(item("a","z",60));
+
+    supermarket.insert(item("z","z",10));supermarket.insert(item("x","z",20));supermarket.insert(item("w","z",30));
+    supermarket.insert(item("m","z",40));supermarket.insert(item("c","z",50));supermarket.insert(item("a","z",60));
+
 
     while (mainMenu != 0) {
         miniMenu = 100; // So I can enter the inner loop again
@@ -772,8 +857,6 @@ int main() {
                     switch (miniMenu) {
                         case 1: {
                             cout << "Enter the items manually." << '\n';
-                            int x = 1;
-                            while (x != 0) {
                                 cout << "Enter item name:     " << '\n';
                                 cin >> itemName;
                                 cout << "Enter item category: " << '\n';
@@ -784,12 +867,6 @@ int main() {
 
                                 item newItem(itemName, itemCategory, itemPrice);
                                 BST.insert(newItem);
-
-                                cout << "If you are finished, enter 0, and if you are not finished, enter anything else." << '\n';
-                                cin >> x;
-                                if (x == 0)
-                                    break;
-                            }
                             continue;
                         }
                         case 2:
@@ -863,7 +940,7 @@ int main() {
                             cout << "Enter item price: " << '\n';
                             cin >> itemPrice;
 
-                              heap_max.add(item(itemName,itemCategory,itemPrice));
+                            heap_max.add(item(itemName,itemCategory,itemPrice));
                             continue;
                         case 2:
                             heap_max.delete_back();
@@ -910,29 +987,41 @@ int main() {
                     cin >> miniMenu;
 
                     switch (miniMenu) {
-                        case 1:
-                            continue;
-                        case 2:
-                            continue;
-                        case 3:
-                            continue;
-                        case 4:
-                            continue;
-                        case 5:
-                            continue;
-                        case 6:
-                            continue;
-                        case 7:
-                            continue;
-                        case 8:
-                            cout << "Returning to main menu..." << '\n';
-                            break;
                         case 0:
                             cout << "Exiting program..." << '\n';
                             return 0;
+                        case 1:
+                            cout<<"Enter product name: ";cin>>itemName;
+                            cout<<"\nEnter product category: ";cin>>itemCategory;
+                            cout<<"\nEnter product price: ";cin>>itemPrice;
+                            cout<<"\n";
+                            minHeap.AddItem(item(itemName,itemCategory,itemPrice));
+                            break;
+                        case 2:
+                            minHeap.DeleteMin();
+                            break;
+                        case 3:
+                            minHeap.DisplayItems();
+                            break;
+                        case 4:
+                            minHeap.DisplayASC(Name);
+                            break;
+                        case 5:
+
+                            minHeap.DisplayDESC(Name);
+                            break;
+                        case 6:
+                            minHeap.DisplayASC(Price);
+                            break;
+                        case 7:
+                            minHeap.DisplayDESC(Price);
+                            break;
+                        case 8:
+                            cout << "Returning to main menu..." << '\n';
+                            break;
                         default:
                             cout << " INVALID CHOICE ): " << '\n';
-                            continue;
+                            break;
                     }
                 }
                 continue;
@@ -953,35 +1042,35 @@ int main() {
 
                     switch (miniMenu) {
                         case 1:
-                            {
-                string name, category;
-                int price;
-                cout << "Enter item name: ";
-                cin >> name;
-                cout << "Enter item category: ";
-                cin >> category;
-                cout << "Enter item price: ";
-                cin >> price;
-                newItem = item(name, category, price);
-                supermarket.insert(newItem);
-                cout << "Item added successfully!" << endl;
-                break;
-            }
+                        {
+                            string name, category;
+                            int price;
+                            cout << "Enter item name: ";
+                            cin >> name;
+                            cout << "Enter item category: ";
+                            cin >> category;
+                            cout << "Enter item price: ";
+                            cin >> price;
+                            newItem = item(name, category, price);
+                            supermarket.insert(newItem);
+                            cout << "Item added successfully!" << endl;
+                            break;
+                        }
                         case 2:
-                            {
-                string name, category;
-                int price;
-                cout << "Enter item name: ";
-                cin >> name;
-                cout << "Enter item category: ";
-                cin >> category;
-                cout << "Enter item price: ";
-                cin >> price;
-                newItem = item(name, category, price);
-                supermarket.remove(newItem);
-                cout << "Item removed successfully!" << endl;
-                break;
-            }
+                        {
+                            string name, category;
+                            int price;
+                            cout << "Enter item name: ";
+                            cin >> name;
+                            cout << "Enter item category: ";
+                            cin >> category;
+                            cout << "Enter item price: ";
+                            cin >> price;
+                            newItem = item(name, category, price);
+                            supermarket.remove(newItem);
+                            cout << "Item removed successfully!" << endl;
+                            break;
+                        }
                         case 3:
                             supermarket.display();
                             break;
